@@ -12,6 +12,14 @@
       <source media="(max-width: 989px)">
       srcset= "{{ section.settings.mobile_banner | image_url: width: 1000 }}"
     {% endif %}
+
+    <img
+      src="{{ section.settings.desktop_banner | image_url: width: 2400 }}"
+      alt="{{ section.settings.heading | escape }}"
+      loading=" lazy"
+      width="{{  section.settings.desktop_banner.width }}"
+      height= "{{  section.settings.desktop_banner.height }}"
+    >
   </picture>
   {% endif %}
 </div>
