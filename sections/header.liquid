@@ -30,7 +30,19 @@
     grid-template-columns: auto 1fr auto;
   }
   .custom_btn_header{
-
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.48px;
+    letter-spacing: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: {{  section.settings.button_text_color }};
+    background-color: {{  section.settings.button_bg_color }};
+  }
+  .custom_btn_header:hover{
+    color: {{  section.settings.button_text_color }};
+    background-color: {{  section.settings.button_bg_color }};
   }
 </style>
 {% comment %} my custom style for header ends here {% endcomment %}
