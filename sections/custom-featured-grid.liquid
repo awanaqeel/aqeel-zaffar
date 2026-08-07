@@ -13,7 +13,13 @@
   {% endif %}
       }
 </style>
-<div class="page-width custom-featured-grid"></div>
+<div class="page-width custom-featured-grid">
+  {% if section.settings.section_heading != blank %}
+    <div class="section_heading">
+      <h2>{{ section.settings.section_heading }}</h2>
+    </div>
+  {% endif %}
+</div>
 {% schema %}
 {
   "name": "Custom Featured Grid",
