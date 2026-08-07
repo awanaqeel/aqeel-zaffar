@@ -1,29 +1,3 @@
-
-<div class="custom-featured-grid">
-  <div class="page-width">
-    {% if section.settings.section_heading != blank %}
-      <div class="section_heading">
-        <h2>{{ section.settings.section_heading }}</h2>
-      </div>
-    {% endif %}
-
-    <div class="custom-product-grid">
-      {% for block in section.blocks %}
-        {% if block.settings.product != blank %}
-          {% assign product = block.settings.product %}
-          <div class="custom-product-grid-item">
-            <div class="grid_image">
-              <img src="{{product.featured_image | img_url: 'master'}}">
-            </div>
-            <div class="quick_view_btn">
-              <img src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487" alt="plus-icon">
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-</div>
 <style>
   {% if section.settings.section_padding_desktop != blank %}
     .custom-featured-grid {
@@ -40,6 +14,7 @@
     margin: 0 0 30px 0;
   }
 
+  /* Product Grid */
   .custom-product-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -47,12 +22,14 @@
     width: 100%;
   }
 
+  /* Product Grid Item */
   .custom-product-grid-item {
     position: relative;
     width: 100%;
     min-width: 0;
   }
 
+  /* Product Image */
   .grid_image {
     width: 100%;
     height: 444px;
@@ -67,17 +44,38 @@
     object-fit: cover;
   }
 
+  /* Quick View Button */
   .quick_view_btn {
-    background: #F8F8F8E5;
+    position: absolute;
+
+    /* Desktop Position */
+    top: var(--quick-top);
+    bottom: var(--quick-bottom);
+    left: var(--quick-left);
+    right: var(--quick-right);
+
     width: 16px;
     height: 16px;
+
+    background: #F8F8F8E5;
+    border-radius: 50%;
+    box-shadow: 0px 3px 4px 0px #00000033;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0px 3px 4px 0px #00000033;
-    border-radius: 50%;
-    position: absolute;
-}
+
+    z-index: 5;
+    box-sizing: border-box;
+  }
+
+  .quick_view_btn img {
+    width: 8px;
+    height: 8px;
+    display: block;
+  }
+
+  /* Mobile */
   @media only screen and (max-width: 989px) {
 
     {% if section.settings.section_padding_mobile != blank %}
@@ -92,6 +90,7 @@
       text-align: center;
     }
 
+    /* 2 Products Per Row */
     .custom-product-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
@@ -101,6 +100,7 @@
       width: 100%;
     }
 
+    /* Mobile Image */
     .grid_image {
       width: 100%;
       height: 186.42px;
@@ -111,8 +111,77 @@
       height: 100%;
       object-fit: cover;
     }
+
+    /* Mobile Quick View Position */
+    .quick_view_btn {
+      top: var(--quick-top-mb);
+      bottom: var(--quick-bottom-mb);
+      left: var(--quick-left-mb);
+      right: var(--quick-right-mb);
+    }
   }
 </style>
+
+
+<div class="page-width custom-featured-grid">
+
+  {% if section.settings.section_heading != blank %}
+    <div class="section_heading">
+      <h2>{{ section.settings.section_heading }}</h2>
+    </div>
+  {% endif %}
+
+
+  <div class="custom-product-grid">
+
+    {% for block in section.blocks %}
+
+      {% if block.settings.product != blank %}
+
+        {% assign product = block.settings.product %}
+
+        <div
+          class="custom-product-grid-item"
+          style="
+            --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
+            --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
+            --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
+            --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
+
+            --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
+            --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
+            --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
+            --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
+          "
+          {{ block.shopify_attributes }}
+        >
+
+          <div class="grid_image">
+            <img
+              src="{{ product.featured_image | img_url: 'master' }}"
+              alt="{{ product.featured_image.alt | escape }}"
+              loading="lazy"
+            >
+          </div>
+
+          <div class="quick_view_btn">
+            <img
+              src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
+              alt="plus-icon"
+            >
+          </div>
+
+        </div>
+
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+
 {% schema %}
 {
   "name": "Custom Featured Grid",
@@ -153,7 +222,7 @@
         },
         {
           "type": "header",
-          "content": "Quick View Icon Position"
+          "content": "Quick View Icon Position - Desktop"
         },
         {
           "type": "range",
@@ -188,14 +257,19 @@
         {
           "type": "range",
           "id": "right",
-          "label": "Right (Mobile)",
+          "label": "Right",
           "min": 0,
           "max": 100,
           "step": 1,
           "default": 0,
           "unit": "%"
         },
-         {
+
+        {
+          "type": "header",
+          "content": "Quick View Icon Position - Mobile"
+        },
+        {
           "type": "range",
           "id": "top_mb",
           "label": "Top (Mobile)",
@@ -208,7 +282,7 @@
         {
           "type": "range",
           "id": "bottom_mb",
-          "label": "Bottom",
+          "label": "Bottom (Mobile)",
           "min": 0,
           "max": 100,
           "step": 1,
