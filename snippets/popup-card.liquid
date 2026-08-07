@@ -156,3 +156,333 @@
   </div>
 
 </div>
+
+<script
+  type="application/json"
+  class="popup-product-json"
+>
+  {{ product | json }}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* =========================================
+     OPEN QUICK VIEW
+  ========================================= */
+
+  document.querySelectorAll('.quick_view_btn').forEach(function (button) {
+
+    button.addEventListener('click', function () {
+
+      var productId = this.getAttribute('data-product-id');
+
+      var popup = document.querySelector(
+        '#product-popup-' + productId
+      );
+
+      if (!popup) return;
+
+      popup.classList.add('is-open');
+      popup.setAttribute('aria-hidden', 'false');
+
+      document.body.classList.add('quick-view-open');
+
+    });
+
+  });
+
+
+  /* =========================================
+     CLOSE POPUP
+  ========================================= */
+
+  document.querySelectorAll('.product_popup_close').forEach(function (button) {
+
+    button.addEventListener('click', closePopup);
+
+  });
+
+
+  document.querySelectorAll('.product_popup_overlay').forEach(function (overlay) {
+
+    overlay.addEventListener('click', closePopup);
+
+  });
+
+
+  function closePopup() {
+
+    var popup = this.closest('.product_popup');
+
+    if (!popup) return;
+
+    popup.classList.remove('is-open');
+    popup.setAttribute('aria-hidden', 'true');
+
+    document.body.classList.remove('quick-view-open');
+
+  }
+
+
+  /* =========================================
+     ESC KEY
+  ========================================= */
+
+  document.addEventListener('keydown', function (event) {
+
+    if (event.key === 'Escape') {
+
+      document.querySelectorAll('.product_popup.is-open').forEach(function (popup) {
+
+        popup.classList.remove('is-open');
+        popup.setAttribute('aria-hidden', 'true');
+
+      });
+
+      document.body.classList.remove('quick-view-open');
+
+    }
+
+  });
+
+
+  /* =========================================
+     PRODUCT OPTIONS
+  ========================================= */
+
+  document.querySelectorAll('.product_popup').forEach(function (popup) {
+
+    var productData = null;
+
+    var productForm = popup.querySelector('.popup_product_form');
+
+    if (!productForm) return;
+
+    var variantInput = popup.querySelector('.popup_variant_id');
+
+    var addButton = popup.querySelector('.popup_add_to_cart');
+
+    var addButtonText = popup.querySelector('.popup_add_to_cart_text');
+
+    var priceElement = popup.querySelector('.popup_product_price');
+
+
+    /*
+     * Get product JSON from the Shopify product
+     */
+
+    var productHandle = productForm.getAttribute('action');
+
+    if (!productHandle) return;
+
+  });
+
+
+  /* =========================================
+     OPTION SELECTION
+  ========================================= */
+
+  document.querySelectorAll('.popup_product_content').forEach(function (content) {
+
+    var form = content.querySelector('.popup_product_form');
+
+    if (!form) return;
+
+    var variantInput = form.querySelector('.popup_variant_id');
+
+    var buttons = content.querySelectorAll('.popup_option_button');
+
+    var selects = content.querySelectorAll('.popup_option_select');
+
+
+    /*
+     * Get the product ID from the popup's parent
+     */
+
+    var popup = content.closest('.product_popup');
+
+    if (!popup) return;
+
+    var productId = popup.getAttribute('data-product-id');
+
+    /*
+     * Shopify product data is embedded below.
+     */
+
+    var productDataElement = popup.querySelector('.popup-product-json');
+
+    if (!productDataElement) return;
+
+    try {
+
+      var productData = JSON.parse(
+        productDataElement.textContent
+      );
+
+      function getSelectedOptions() {
+
+        var selectedOptions = [];
+
+        content.querySelectorAll(
+          '.popup_product_option'
+        ).forEach(function (optionContainer) {
+
+          var index = parseInt(
+            optionContainer.getAttribute('data-option-index')
+          );
+
+          var button = optionContainer.querySelector(
+            '.popup_option_button.is-selected'
+          );
+
+          var select = optionContainer.querySelector(
+            '.popup_option_select'
+          );
+
+          if (button) {
+
+            selectedOptions[index] =
+              button.getAttribute('data-option-value');
+
+          } else if (select) {
+
+            selectedOptions[index] = select.value;
+
+          }
+
+        });
+
+        return selectedOptions;
+
+      }
+
+
+      function updateVariant() {
+
+        var selectedOptions = getSelectedOptions();
+
+        var variant = productData.variants.find(
+          function (variant) {
+
+            return variant.options.every(
+              function (optionValue, index) {
+
+                return optionValue === selectedOptions[index];
+
+              }
+            );
+
+          }
+        );
+
+
+        if (!variant) {
+
+          if (variantInput) {
+            variantInput.value = '';
+          }
+
+          if (addButton) {
+            addButton.disabled = true;
+          }
+
+          if (addButtonText) {
+            addButtonText.textContent = 'UNAVAILABLE';
+          }
+
+          return;
+
+        }
+
+
+        if (variantInput) {
+          variantInput.value = variant.id;
+        }
+
+
+        if (priceElement) {
+
+          priceElement.innerHTML =
+            Shopify.formatMoney(
+              variant.price,
+              Shopify.money_format
+            );
+
+        }
+
+
+        if (addButton) {
+          addButton.disabled = !variant.available;
+        }
+
+
+        if (addButtonText) {
+
+          addButtonText.textContent =
+            variant.available
+              ? 'ADD TO CART'
+              : 'SOLD OUT';
+
+        }
+
+      }
+
+
+      /* Option buttons */
+
+      buttons.forEach(function (button) {
+
+        button.addEventListener('click', function () {
+
+          var index = this.getAttribute(
+            'data-option-index'
+          );
+
+          content.querySelectorAll(
+            '.popup_option_button[data-option-index="' +
+            index +
+            '"]'
+          ).forEach(function (item) {
+
+            item.classList.remove('is-selected');
+
+          });
+
+
+          this.classList.add('is-selected');
+
+          updateVariant();
+
+        });
+
+      });
+
+
+      /* Select options */
+
+      selects.forEach(function (select) {
+
+        select.addEventListener(
+          'change',
+          updateVariant
+        );
+
+      });
+
+
+      updateVariant();
+
+    } catch (error) {
+
+      console.error(
+        'Quick View product data error:',
+        error
+      );
+
+    }
+
+  });
+
+});
+</script>
