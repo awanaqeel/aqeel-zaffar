@@ -67,12 +67,16 @@
   </div>
 
   {% if section.settings.footer_content != blank %}
+    <div class="footer_content">
+      {{ section.settings.footer_content }}
+    </div>
+  {% endif %}
+</div>
+{% if section.settings.footer_content != blank %}
   <div class="footer_content">
-{{section.settings.footer_content }}
+    {{ section.settings.footer_content }}
   </div>
 {% endif %}
-</div>
-
 <style>
     .custom-banner {
       position: relative;
@@ -237,7 +241,7 @@
       display: none;
     }
     .desktop_hidden {
-      display: flex;        
+      display: flex;
       position: absolute;
         bottom: 10%;
         left: 0;
