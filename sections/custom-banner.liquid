@@ -9,8 +9,11 @@
     {% if section.settings.desktop_banner != blank %}
       <picture>
         {% if section.settings.mobile_banner != blank %}
-          <source media="(max-width: 989px)">
-          srcset= "{{ section.settings.mobile_banner | image_url: width: 1000 }}"
+          <source
+            media="(max-width: 989px)"
+            srcset="
+            {{ section.settings.mobile_banner | image_url: width: 1000 }}"
+          >
         {% endif %}
 
         <img
@@ -24,6 +27,7 @@
       </picture>
     {% endif %}
   </div>
+
   <div class="custom-banner__content page-width">
     <div class="custom-banner__text">
       {% if section.settings.heading != blank %}
@@ -56,8 +60,8 @@
     text-align: center;
     text-transform: uppercase;
     text-decoration: none;
-    color: {{ section.settings.button_text_color }}; 
-    background-color: {{ section.settings.button_bg_color }}; 
+    color: {{ section.settings.button_text_color }};
+    background-color: {{ section.settings.button_bg_color }};
     padding: 12px 39px;
     width: 100%; display: flex; justify-content: center; align-items: center; z-index: 1; }
 
