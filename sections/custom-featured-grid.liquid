@@ -38,8 +38,11 @@
   <div class="custom-product-grid">
     {%  for block in section.blocks %}
       {%  if block.settings.product != blank %}
+        {% assign product = block.settings.product %}
         <div class="custom-product-grid-item">
-          
+          <div class="grid_image">
+            <img src="{{product.featured_image | img_url: 'master'}}">
+          </div>
         </div>
       {%  endif %}
     {% endfor %}
