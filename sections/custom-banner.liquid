@@ -1,11 +1,57 @@
-
-
-
 {% schema %}
 {
   "name": "Custom banner",
   "settings": [
-  
+    {
+      "type": "image_picker",
+      "id": "desktop_banner",
+      "label": "Desktop Banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_banner",
+      "label": "Mobile Banner"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Bg Color"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_hover_color",
+      "label": "Button BG Hover Color"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button BG Text Color"
+    }
   ],
   "presets": [
     {
