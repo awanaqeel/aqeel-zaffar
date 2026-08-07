@@ -15,7 +15,7 @@
     "heading_scale": 100,
     "type_body_font": "jost_n4",
     "body_scale": 100,
-    "page_width": 1400,
+    "page_width": 1440,
     "spacing_sections": 0,
     "spacing_grid_horizontal": 8,
     "spacing_grid_vertical": 8,
@@ -200,10 +200,10 @@
       },
       "scheme-457d7d71-55c8-45ba-8394-11dee07a090f": {
         "settings": {
-          "background": "#F5F5F5",
+          "background": "#f5f5f5",
           "background_gradient": "",
           "text": "#000000",
-          "button": "#FFF544",
+          "button": "#fff544",
           "button_label": "#000000",
           "secondary_button_label": "#121212",
           "shadow": "#121212"
