@@ -80,20 +80,20 @@
 }
 .desktop_hidden{
     display: none;
-  }
-  .desktop_hidden .mobile_hidden{
-    display: flex;
     justify-content: center;
     align-items: center;
     gap: 16px;
     flex-direction: column;
+  }
+  .desktop_hidden .mobile_hidden{
+    display: block;
   }
 @media only screen and (max-width: 989px){
   .mobile_hidden{
     display: none;
   }
   .desktop_hidden {
-    display: block;
+    display: flex;
   }
 }
 </style>
