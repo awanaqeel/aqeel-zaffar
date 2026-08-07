@@ -1,0 +1,158 @@
+<div class="popup_product_content">
+
+  <!-- Product Image -->
+  <div class="popup_product_image">
+
+    {% if product.featured_image %}
+      <img
+        src="{{ product.featured_image | image_url: width: 800 }}"
+        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+        loading="lazy"
+      >
+    {% endif %}
+
+  </div>
+
+
+  <!-- Product Information -->
+  <div class="popup_product_info">
+
+    <!-- Product Title -->
+    <h3 class="popup_product_title">
+      {{ product.title }}
+    </h3>
+
+
+    <!-- Product Price -->
+    <div class="popup_product_price">
+      {{ product.selected_or_first_available_variant.price | money }}
+    </div>
+
+
+    <!-- Description -->
+    {% if product.description != blank %}
+      <div class="popup_product_description">
+        {{ product.description | strip_html | truncatewords: 30 }}
+      </div>
+    {% endif %}
+
+
+    <!-- Product Form -->
+    {% form 'product', product, class: 'popup_product_form' %}
+
+      <input
+        type="hidden"
+        name="id"
+        class="popup_variant_id"
+        value="{{ product.selected_or_first_available_variant.id }}"
+      >
+
+
+      <!-- Product Options -->
+      {% unless product.has_only_default_variant %}
+
+        <div class="popup_product_options">
+
+          {% for option in product.options_with_values %}
+
+            <div
+              class="popup_product_option"
+              data-option-index="{{ forloop.index0 }}"
+            >
+
+              <label class="popup_option_label">
+                {{ option.name }}
+              </label>
+
+
+              {% if forloop.first %}
+
+                <!-- First option as buttons -->
+                <div class="popup_option_buttons">
+
+                  {% for value in option.values %}
+
+                    <button
+                      type="button"
+                      class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                      data-option-value="{{ value | escape }}"
+                      data-option-index="{{ forloop.parentloop.index0 }}"
+                    >
+                      {{ value }}
+                    </button>
+
+                  {% endfor %}
+
+                </div>
+
+              {% else %}
+
+                <!-- Other options as select -->
+                <div class="popup_select_wrapper">
+
+                  <select
+                    class="popup_option_select"
+                    data-option-index="{{ forloop.index0 }}"
+                  >
+
+                    {% for value in option.values %}
+
+                      <option
+                        value="{{ value | escape }}"
+                        {% if option.selected_value == value %}
+                          selected
+                        {% endif %}
+                      >
+                        {{ value }}
+                      </option>
+
+                    {% endfor %}
+
+                  </select>
+
+                  <span class="popup_select_arrow">
+                    ↓
+                  </span>
+
+                </div>
+
+              {% endif %}
+
+            </div>
+
+          {% endfor %}
+
+        </div>
+
+      {% endunless %}
+
+
+      <!-- Add To Cart -->
+      <button
+        type="submit"
+        name="add"
+        class="popup_add_to_cart"
+        {% unless product.selected_or_first_available_variant.available %}
+          disabled
+        {% endunless %}
+      >
+
+        <span class="popup_add_to_cart_text">
+          {% if product.selected_or_first_available_variant.available %}
+            ADD TO CART
+          {% else %}
+            SOLD OUT
+          {% endif %}
+        </span>
+
+        <span class="popup_add_to_cart_arrow">
+          →
+        </span>
+
+      </button>
+
+    {% endform %}
+
+  </div>
+
+</div>
