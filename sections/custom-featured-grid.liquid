@@ -371,7 +371,9 @@
   line-height: 1;
 }
 
-
+body.quick-view-open {
+  overflow: hidden;
+}
   /* Mobile */
   @media only screen and (max-width: 989px) {
 
@@ -544,13 +546,13 @@
             >
           </div>
 
-          <div class="quick_view_btn" id="quick_view_btn_{{ product.id }}">
+          <div class="quick_view_btn" id="quick_view_btn_{{ product.id }}" data-product-id="{{  product.id }}">
             <img
               src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
               alt="plus-icon"
             >
           </div>
-          <div class="product_popup" id="product-popup-{{  product.id }}">
+          <div class="product_popup" id="product-popup-{{  product.id }}" data-product-id="{{  product.id }}">
             {% render 'popup-card', product: product, section: section %}
           </div>
 
