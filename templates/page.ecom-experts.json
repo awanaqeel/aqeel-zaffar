@@ -39,8 +39,8 @@
       "settings": {
         "section_heading": "Tisso vison in the wild",
         "select_product": "dark-winter-jacket",
-        "section_padding_desktop": "",
-        "section_padding_mobile": ""
+        "section_padding_desktop": "90px 0 50px 0",
+        "section_padding_mobile": "40px 0 25px 0"
       }
     }
   },
