@@ -5,6 +5,10 @@
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
 {% if section.settings.enabled_custom_design  %}
+   <div class="header_text">
+    {{ section.settings.custom_text }}
+   </div>
+
   {% else %}
     <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
