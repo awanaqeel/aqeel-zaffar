@@ -1,3 +1,29 @@
+
+<div class="custom-featured-grid">
+  <div class="page-width">
+    {% if section.settings.section_heading != blank %}
+      <div class="section_heading">
+        <h2>{{ section.settings.section_heading }}</h2>
+      </div>
+    {% endif %}
+
+    <div class="custom-product-grid">
+      {% for block in section.blocks %}
+        {% if block.settings.product != blank %}
+          {% assign product = block.settings.product %}
+          <div class="custom-product-grid-item">
+            <div class="grid_image">
+              <img src="{{product.featured_image | img_url: 'master'}}">
+            </div>
+            <div class="quick_view_btn">
+              <img src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487" alt="plus-icon">
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
 <style>
   {% if section.settings.section_padding_desktop != blank %}
     .custom-featured-grid {
@@ -87,31 +113,6 @@
     }
   }
 </style>
-<div class="custom-featured-grid">
-  <div class="page-width">
-    {% if section.settings.section_heading != blank %}
-      <div class="section_heading">
-        <h2>{{ section.settings.section_heading }}</h2>
-      </div>
-    {% endif %}
-
-    <div class="custom-product-grid">
-      {% for block in section.blocks %}
-        {% if block.settings.product != blank %}
-          {% assign product = block.settings.product %}
-          <div class="custom-product-grid-item">
-            <div class="grid_image">
-              <img src="{{product.featured_image | img_url: 'master'}}">
-            </div>
-            <div class="quick_view_btn">
-              <img src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487" alt="plus-icon">
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-</div>
 {% schema %}
 {
   "name": "Custom Featured Grid",
