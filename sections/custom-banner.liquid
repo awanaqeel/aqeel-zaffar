@@ -5,24 +5,39 @@
     --mobile-banner-ratio: {{ section.settings.mobile_banner.aspect_ratio | default: 0.82 }}
   "
 >
-<div class="custom-banner__media">
-{% if section.settings.desktop_banner!= blank %}
-  <picture>
-    {% if section.settings.mobile_banner != blank %}
-      <source media="(max-width: 989px)">
-      srcset= "{{ section.settings.mobile_banner | image_url: width: 1000 }}"
-    {% endif %}
+  <div class="custom-banner__media">
+    {% if section.settings.desktop_banner != blank %}
+      <picture>
+        {% if section.settings.mobile_banner != blank %}
+          <source media="(max-width: 989px)">
+          srcset= "{{ section.settings.mobile_banner | image_url: width: 1000 }}"
+        {% endif %}
 
-    <img
-      src="{{ section.settings.desktop_banner | image_url: width: 2400 }}"
-      alt="{{ section.settings.heading | escape }}"
-      loading=" lazy"
-      width="{{  section.settings.desktop_banner.width }}"
-      height= "{{  section.settings.desktop_banner.height }}"
-    >
-  </picture>
-  {% endif %}
-</div>
+        <img
+          src="{{ section.settings.desktop_banner | image_url: width: 2400 }}"
+          alt="{{ section.settings.heading | escape }}"
+          loading=" lazy"
+          width="{{  section.settings.desktop_banner.width }}"
+          height=""
+          {{ section.settings.desktop_banner.height }}
+        >
+      </picture>
+    {% endif %}
+  </div>
+  <div class="custom-banner__content page-width">
+    <div class="custom-banner__text">
+      {% if section.settings.heading != blank %}
+        <h2 class="custom-banner-heading">
+          {{section.settings.heading }}
+        </h2>
+      {%  endif %}
+      {% if section.settings.content != blank %}
+        <div class="custom-banner-content">
+          {{section.settings.content }}
+        </div>
+      {%  endif %}
+    </div>
+  </div>
 </section>
 
 {% schema %}
