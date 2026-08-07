@@ -15,7 +15,17 @@
 {%- if section.settings.menu_type_desktop == 'mega' -%}
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
-
+{% comment %} my custom style for header starts here {% endcomment %}
+<style>
+  .header_text {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 13.42px;
+    letter-spacing: 0px;
+    text-align: center;
+  }
+</style>
+{% comment %} my custom style for header ends here {% endcomment %}
 <style>
   header-drawer {
     justify-self: start;
@@ -626,7 +636,7 @@
     },
     {
       "type": "header",
-      "content": "Custom Design",
+      "content": "Custom Design"
     },
     {
       "type": "checkbox",
@@ -634,7 +644,7 @@
       "label": "Enabled Custom Design",
       "default": false
     },
-     {
+    {
       "type": "richtext",
       "id": "custom_text",
       "label": "Text"
@@ -669,7 +679,7 @@
       "id": "button_bg_text_color",
       "label": "Button BG Text Color"
     },
-   
+
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"
