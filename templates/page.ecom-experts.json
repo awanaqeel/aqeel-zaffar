@@ -32,10 +32,21 @@
         "button_bg_hover_color": "#fff544",
         "button_hover_text_color": "#000000"
       }
+    },
+    "custom_featured_grid_aMfmaP": {
+      "type": "custom-featured-grid",
+      "name": "Custom Featured Grid",
+      "settings": {
+        "section_heading": "Tisso vison in the wild",
+        "select_product": "",
+        "section_padding_desktop": "",
+        "section_padding_mobile": ""
+      }
     }
   },
   "order": [
     "main",
-    "custom_banner_BEjedK"
+    "custom_banner_BEjedK",
+    "custom_featured_grid_aMfmaP"
   ]
 }
