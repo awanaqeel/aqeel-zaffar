@@ -66,9 +66,11 @@
     </div>
   </div>
 
+  {% if section.settings.footer_content != blank %}
   <div class="footer_content">
-
+{{section.settings.footer_content }}
   </div>
+{% endif %}
 </div>
 
 <style>
@@ -96,6 +98,7 @@
       line-height: 13.42px;
       letter-spacing: 0px;
       text-align: center;
+      text-transform: uppercase;
       margin: 0px;
       color: #000;
     }
@@ -334,6 +337,11 @@
       "id": "button_hover_text_color",
       "label": "Button BG Text Color",
       "default": "#000000"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_content",
+      "label": "Footer Content"
     }
   ],
   "presets": [
