@@ -25,14 +25,16 @@
       </picture>
 
       {% if section.settings.button_label != blank %}
-        <a
-          href="{{ section.settings.button_link }}"
-          class="custom-banner__button desktop_hidden"
-        >
-          {{ section.settings.button_label }}
+        <div class="desktop_hidden">
+          <a
+            href="{{ section.settings.button_link }}"
+            class="custom-banner__button"
+          >
+            {{ section.settings.button_label }}
 
-          <span class="custom-banner__button-arrow">&xrarr;</span>
-        </a>
+            <span class="custom-banner__button-arrow">&xrarr;</span>
+          </a>
+        </div>
       {% endif %}
     {% endif %}
   </div>
