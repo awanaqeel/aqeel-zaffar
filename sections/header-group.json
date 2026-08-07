@@ -42,7 +42,7 @@
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
         "menu": "",
-        "menu_type_desktop": "dropdown",
+        "menu_type_desktop": "drawer",
         "sticky_header_type": "on-scroll-up",
         "show_line_separator": false,
         "color_scheme": "scheme-457d7d71-55c8-45ba-8394-11dee07a090f",
