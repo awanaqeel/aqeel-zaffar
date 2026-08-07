@@ -45,10 +45,10 @@
             "bottom": 0,
             "left": 0,
             "right": 35,
-            "top_mb": 0,
+            "top_mb": 12,
             "bottom_mb": 0,
             "left_mb": 0,
-            "right_mb": 0
+            "right_mb": 30
           }
         },
         "product_RmUhAg": {
@@ -59,10 +59,10 @@
             "bottom": 0,
             "left": 0,
             "right": 10,
-            "top_mb": 0,
+            "top_mb": 10,
             "bottom_mb": 0,
             "left_mb": 0,
-            "right_mb": 0
+            "right_mb": 40
           }
         },
         "product_Eami6Y": {
@@ -73,9 +73,9 @@
             "bottom": 0,
             "left": 61,
             "right": 0,
-            "top_mb": 0,
+            "top_mb": 10,
             "bottom_mb": 0,
-            "left_mb": 0,
+            "left_mb": 61,
             "right_mb": 0
           }
         },
@@ -87,7 +87,7 @@
             "bottom": 0,
             "left": 0,
             "right": 25,
-            "top_mb": 25,
+            "top_mb": 22,
             "bottom_mb": 0,
             "left_mb": 0,
             "right_mb": 35
