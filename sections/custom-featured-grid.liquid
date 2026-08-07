@@ -77,24 +77,26 @@
     }
   }
 </style>
-<div class="page-width custom-featured-grid">
-  {% if section.settings.section_heading != blank %}
-    <div class="section_heading">
-      <h2>{{ section.settings.section_heading }}</h2>
-    </div>
-  {% endif %}
+<div class="custom-featured-grid">
+  <div page-width>
+    {% if section.settings.section_heading != blank %}
+      <div class="section_heading">
+        <h2>{{ section.settings.section_heading }}</h2>
+      </div>
+    {% endif %}
 
-  <div class="custom-product-grid">
-    {% for block in section.blocks %}
-      {% if block.settings.product != blank %}
-        {% assign product = block.settings.product %}
-        <div class="custom-product-grid-item">
-          <div class="grid_image">
-            <img src="{{product.featured_image | img_url: 'master'}}">
+    <div class="custom-product-grid">
+      {% for block in section.blocks %}
+        {% if block.settings.product != blank %}
+          {% assign product = block.settings.product %}
+          <div class="custom-product-grid-item">
+            <div class="grid_image">
+              <img src="{{product.featured_image | img_url: 'master'}}">
+            </div>
           </div>
-        </div>
-      {% endif %}
-    {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% schema %}
