@@ -11,13 +11,31 @@
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {
         "padding_top": 28,
         "padding_bottom": 28
       }
+    },
+    "custom_banner_BEjedK": {
+      "type": "custom-banner",
+      "name": "Custom banner",
+      "settings": {
+        "desktop_banner": "shopify://shop_images/desktop_banner.png",
+        "mobile_banner": "shopify://shop_images/mobile-banner.png",
+        "heading": "The Gift Guide",
+        "content": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gift.</p>",
+        "button_label": "Shop Now",
+        "button_link": "",
+        "button_bg_color": "#000000",
+        "button_text_color": "#FFFFFF",
+        "button_bg_hover_color": "#FFFFFF",
+        "button_hover_text_color": "#000000"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "custom_banner_BEjedK"
   ]
 }
