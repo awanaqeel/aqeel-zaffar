@@ -41,10 +41,14 @@
           "type": "product",
           "settings": {
             "product": "black-leather-bag",
-            "top": 0,
+            "top": 60,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 35,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         },
         "product_RmUhAg": {
@@ -54,7 +58,11 @@
             "top": 0,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 0,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         },
         "product_Eami6Y": {
@@ -64,7 +72,11 @@
             "top": 0,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 0,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         },
         "product_9aJfNh": {
@@ -74,7 +86,11 @@
             "top": 0,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 0,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         },
         "product_qxPpyK": {
@@ -84,7 +100,11 @@
             "top": 0,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 0,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         },
         "product_yEQTYj": {
@@ -94,7 +114,11 @@
             "top": 0,
             "bottom": 0,
             "left": 0,
-            "right": 0
+            "right": 0,
+            "top_mb": 0,
+            "bottom_mb": 0,
+            "left_mb": 0,
+            "right_mb": 0
           }
         }
       },
