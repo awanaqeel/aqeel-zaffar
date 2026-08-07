@@ -38,7 +38,7 @@
       "name": "Custom Featured Grid",
       "settings": {
         "section_heading": "Tisso vison in the wild",
-        "select_product": "",
+        "select_product": "dark-winter-jacket",
         "section_padding_desktop": "",
         "section_padding_mobile": ""
       }
