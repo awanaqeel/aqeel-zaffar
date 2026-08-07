@@ -1,6 +1,19 @@
-<div class="page-width">
+<style>
+      {% if section.settings.section_padding_desktop != blank %}
+      .custom-featured-grid{
+          padding: {{ section.settings.section_padding_desktop }};
+      }
+  {% endif %}
+      @media only screen and (max-width: 989px){
 
-</div>
+      {% if section.settings.section_padding_mobile != blank %}
+      .custom-featured-grid{
+          padding: {{ section.settings.section_padding_mobile }};
+      }
+  {% endif %}
+      }
+</style>
+<div class="page-width custom-featured-grid"></div>
 {% schema %}
 {
   "name": "Custom Featured Grid",
@@ -16,7 +29,7 @@
       "label": "Select Product",
       "info": "Product that is added automatically when Black and Medium is selected."
     },
-     {
+    {
       "type": "text",
       "id": "section_padding_desktop",
       "label": "Section Padding (Desktop)",
