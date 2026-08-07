@@ -239,6 +239,12 @@
       {%- endif -%}
     {%- endif -%}
 
+    
+{% if section.settings.enabled_custom_design  %}
+  {%  if section.settings.button_label != blank and section.settings.button_link != blank %}
+    <a href="{{section.settings.button_link }}">{{section.settings.button_label}}</a>
+  {% endif %}
+{% else %}
     <div class="header__icons{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
       <div class="desktop-localization-wrapper">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
@@ -318,6 +324,7 @@
         {%- endif -%}
       </a>
     </div>
+  {% endif %}
   </header>
 </{{ header_tag }}>
 
