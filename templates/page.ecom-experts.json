@@ -87,10 +87,10 @@
             "bottom": 0,
             "left": 0,
             "right": 25,
-            "top_mb": 0,
+            "top_mb": 25,
             "bottom_mb": 0,
             "left_mb": 0,
-            "right_mb": 0
+            "right_mb": 35
           }
         },
         "product_qxPpyK": {
