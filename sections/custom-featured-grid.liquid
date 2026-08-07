@@ -36,7 +36,13 @@
   {% endif %}
 
   <div class="custom-product-grid">
-
+    {%  for block in section.blocks %}
+      {%  if block.settings.product != blank %}
+        <div class="custom-product-grid-item">
+          
+        </div>
+      {%  endif %}
+    {% endfor %}
   </div>
 </div>
 {% schema %}
