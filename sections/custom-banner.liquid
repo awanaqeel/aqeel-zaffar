@@ -1,7 +1,21 @@
-<div class="custom-banner">
-  
+<section
+  class="custom-banner"
+  style="
+    --desktop-banner-ratio: {{ section.settings.desktop_banner.aspect_ratio | default: 1.8}};
+    --mobile-banner-ratio: {{ section.settings.mobile_banner.aspect_ratio | default: 0.82 }}
+  "
+>
+<div class="custom-banner__media">
+{% if section.settings.desktop_banner!= blank %}
+  <picture>
+    {% if section.settings.mobile_banner != blank %}
+      <source media="(max-width: 989px)">
+      srcset= "{{ section.settings.mobile_banner | image_url: width: 1000 }}"
+    {% endif %}
+  </picture>
+  {% endif %}
 </div>
-
+</section>
 
 {% schema %}
 {
