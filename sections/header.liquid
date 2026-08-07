@@ -159,7 +159,7 @@
     }
   }
 
-  @media screen and (min-width: 990px) {
+  @media screen and (min-width: 989px) {
     .header {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -293,7 +293,7 @@
     
 {% if section.settings.enabled_custom_design  %}
   {%  if section.settings.button_label != blank and section.settings.button_link != blank %}
-    <a href="{{section.settings.button_link }}" class="custom_btn_header">{{section.settings.button_label}}<span>&xrarr;</span> </a>
+    <a href="{{section.settings.button_link }}" class="custom_btn_header mobile_hidden">{{section.settings.button_label}}<span>&xrarr;</span> </a>
   {% endif %}
 {% else %}
     <div class="header__icons{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
