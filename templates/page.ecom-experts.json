@@ -111,10 +111,10 @@
           "type": "product",
           "settings": {
             "product": "dark-denim-top",
-            "top": 0,
+            "top": 40,
             "bottom": 0,
             "left": 0,
-            "right": 0,
+            "right": 20,
             "top_mb": 0,
             "bottom_mb": 0,
             "left_mb": 0,
