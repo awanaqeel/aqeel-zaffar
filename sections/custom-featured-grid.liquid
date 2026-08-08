@@ -611,146 +611,6 @@ body.quick-view-open {
   </div>
 
 </div>
-
-
-{% schema %}
-{
-  "name": "Custom Featured Grid",
-  "settings": [
-    {
-      "type": "text",
-      "id": "section_heading",
-      "label": "Section Heading"
-    },
-    {
-      "type": "product",
-      "id": "select_product",
-      "label": "Select Product",
-      "info": "Product that is added automatically when Black and Medium is selected."
-    },
-    {
-      "type": "text",
-      "id": "section_padding_desktop",
-      "label": "Section Padding (Desktop)",
-      "info": "Write in this format (top right bottom left)"
-    },
-    {
-      "type": "text",
-      "id": "section_padding_mobile",
-      "label": "Section Padding (Mobile)",
-      "info": "Write in this format (top right bottom left)"
-    }
-  ],
-  "blocks": [
-    {
-      "name": "Product",
-      "type": "product",
-      "settings": [
-        {
-          "type": "product",
-          "id": "product",
-          "label": "Product"
-        },
-        {
-          "type": "header",
-          "content": "Quick View Icon Position - Desktop"
-        },
-        {
-          "type": "range",
-          "id": "top",
-          "label": "Top",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "bottom",
-          "label": "Bottom",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "left",
-          "label": "Left",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "right",
-          "label": "Right",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-
-        {
-          "type": "header",
-          "content": "Quick View Icon Position - Mobile"
-        },
-        {
-          "type": "range",
-          "id": "top_mb",
-          "label": "Top (Mobile)",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "bottom_mb",
-          "label": "Bottom (Mobile)",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "left_mb",
-          "label": "Left (Mobile)",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        },
-        {
-          "type": "range",
-          "id": "right_mb",
-          "label": "Right (Mobile)",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 0,
-          "unit": "%"
-        }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Custom Featured Grid"
-    }
-  ]
-}
-{% endschema %}
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -990,3 +850,142 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+
+{% schema %}
+{
+  "name": "Custom Featured Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading"
+    },
+    {
+      "type": "product",
+      "id": "select_product",
+      "label": "Select Product",
+      "info": "Product that is added automatically when Black and Medium is selected."
+    },
+    {
+      "type": "text",
+      "id": "section_padding_desktop",
+      "label": "Section Padding (Desktop)",
+      "info": "Write in this format (top right bottom left)"
+    },
+    {
+      "type": "text",
+      "id": "section_padding_mobile",
+      "label": "Section Padding (Mobile)",
+      "info": "Write in this format (top right bottom left)"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Quick View Icon Position - Desktop"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "Top",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "bottom",
+          "label": "Bottom",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "label": "Left",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "right",
+          "label": "Right",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+
+        {
+          "type": "header",
+          "content": "Quick View Icon Position - Mobile"
+        },
+        {
+          "type": "range",
+          "id": "top_mb",
+          "label": "Top (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "bottom_mb",
+          "label": "Bottom (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "left_mb",
+          "label": "Left (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "right_mb",
+          "label": "Right (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Featured Grid"
+    }
+  ]
+}
+{% endschema %}
+
