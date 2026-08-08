@@ -146,15 +146,9 @@
 
   {% endform %}
 
-  <!-- Product JSON (kept inside the popup content so each popup carries its own data) -->
-  <script type="application/json" class="popup-product-json">
-    {{ product | json }}
-  </script>
+ 
 
-</div>
-
-
-<script>
+{% comment %} <script>
 (function () {
 
   /*
@@ -770,4 +764,4 @@
 
 
 })();
-</script>
+</script> {% endcomment %}
