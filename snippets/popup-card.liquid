@@ -82,9 +82,6 @@
                   {% for value in option.values %}
                     <option
                       value="{{ value | escape }}"
-                      {% if option.selected_value == value %}
-                        selected
-                      {% endif %}
                     >
                       {{ value }}
                     </option>
