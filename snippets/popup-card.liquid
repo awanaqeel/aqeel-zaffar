@@ -39,13 +39,6 @@
   <!-- No <form> tag at all now — plain div, no native submission possible -->
   <div class="popup_product_form">
 
-    <input
-      type="hidden"
-      name="id"
-      class="popup_variant_id"
-      value="{{ product.selected_or_first_available_variant.id }}"
-    >
-
     {% unless product.has_only_default_variant %}
       <div class="popup_product_options">
 
