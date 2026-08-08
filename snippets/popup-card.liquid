@@ -53,22 +53,8 @@
               </label>
 
               {% if forloop.first %}
-                <!-- First option as buttons -->
-                <div class="popup_option_buttons">
-                  {% for value in option.values %}
-                    <button
-                      type="button"
-                      class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
-                      data-option-value="{{ value | escape }}"
-                      data-option-index="{{ forloop.parentloop.index0 }}"
-                    >
-                      {{ value }}
-                    </button>
-                  {% endfor %}
-                </div>
-
-              {% else %}
-                <!-- Other options as select -->
+                
+ <!-- Other options as select -->
                 <div class="popup_select_wrapper">
                   <select
                     class="popup_option_select"
@@ -87,6 +73,22 @@
                   </select>
 
                   <span class="popup_select_arrow"> ↓ </span>
+                </div>
+              
+
+              {% else %}
+                  <!-- First option as buttons -->
+                <div class="popup_option_buttons">
+                  {% for value in option.values %}
+                    <button
+                      type="button"
+                      class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                      data-option-value="{{ value | escape }}"
+                      data-option-index="{{ forloop.parentloop.index0 }}"
+                    >
+                      {{ value }}
+                    </button>
+                  {% endfor %}
                 </div>
               {% endif %}
             </div>
