@@ -1,3 +1,255 @@
+{% comment %}
+  ============================================================
+  QUICK VIEW PRODUCT POPUP
+  ============================================================
+{% endcomment %}
+
+{% assign auto_added_product = section.settings.select_product %}
+
+<div class="popup_product_content">
+
+  <!-- ========================================================
+       CLOSE BUTTON
+       ======================================================== -->
+
+  <button
+    type="button"
+    class="product_popup_close"
+    id="close-popup-{{ product.id }}"
+    aria-label="Close"
+  >
+    <img
+      src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
+      alt="Close"
+    >
+  </button>
+
+
+  <!-- ========================================================
+       PRODUCT IMAGE + INFORMATION
+       ======================================================== -->
+
+  <div class="image_with_info">
+
+    <!-- Product Image -->
+    <div class="popup_product_image">
+
+      {% if product.featured_image %}
+
+        <img
+          src="{{ product.featured_image | image_url: width: 800 }}"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="lazy"
+        >
+
+      {% endif %}
+
+    </div>
+
+
+    <!-- Product Information -->
+    <div class="popup_product_info">
+
+      <!-- Product Title -->
+      <h3 class="popup_product_title">
+        {{ product.title }}
+      </h3>
+
+
+      <!-- Product Price -->
+      <div class="popup_product_price">
+        {{ product.selected_or_first_available_variant.price | money }}
+      </div>
+
+
+      <!-- Product Description -->
+      {% if product.description != blank %}
+
+        <div class="popup_product_description">
+          {{ product.description | strip_html | truncatewords: 30 }}
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================
+       PRODUCT FORM
+       ======================================================== -->
+
+  {% form 'product',
+    product,
+    class: 'popup_product_form'
+  %}
+
+    <!--
+      IMPORTANT:
+      This value is intentionally empty initially.
+
+      We do NOT want Shopify to use the first available
+      variant when the customer has not selected a variant.
+    -->
+
+    <input
+      type="hidden"
+      name="id"
+      class="popup_variant_id"
+      value=""
+    >
+
+
+    <!-- ======================================================
+         PRODUCT OPTIONS
+         ====================================================== -->
+
+    {% unless product.has_only_default_variant %}
+
+      <div class="popup_product_options">
+
+        {% for option in product.options_with_values %}
+
+          <div
+            class="popup_product_option"
+            data-option-index="{{ forloop.index0 }}"
+            data-option-name="{{ option.name | escape }}"
+          >
+
+            <label class="popup_option_label">
+              {{ option.name }}
+            </label>
+
+
+            {% if forloop.first %}
+
+              <!-- ============================================
+                   FIRST OPTION - SELECT
+                   ============================================ -->
+
+              <div class="popup_select_wrapper">
+
+                <select
+                  class="popup_option_select"
+                  data-option-index="{{ forloop.index0 }}"
+                >
+
+                  <option
+                    value=""
+                    disabled
+                    selected
+                  >
+                    Choose your size
+                  </option>
+
+
+                  {% for value in option.values %}
+
+                    <option
+                      value="{{ value | escape }}"
+                    >
+                      {{ value }}
+                    </option>
+
+                  {% endfor %}
+
+                </select>
+
+                <span class="popup_select_arrow">
+                  ↓
+                </span>
+
+              </div>
+
+
+            {% else %}
+
+
+              <!-- ============================================
+                   OTHER OPTIONS - BUTTONS
+                   ============================================ -->
+
+              <div class="popup_option_buttons">
+
+                {% for value in option.values %}
+
+                  <button
+                    type="button"
+                    class="popup_option_button"
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
+                    {% if option.name | downcase == 'color' %}
+                      style="border-left: 4px solid {{ value }}"
+                    {% endif %}
+                  >
+                    {{ value }}
+                  </button>
+
+                {% endfor %}
+
+              </div>
+
+            {% endif %}
+
+          </div>
+
+        {% endfor %}
+
+      </div>
+
+    {% endunless %}
+
+
+    <!-- ======================================================
+         ADD TO CART
+         ====================================================== -->
+
+    <button
+      type="submit"
+      name="add"
+      class="popup_add_to_cart custom-banner__button"
+      disabled
+    >
+
+      <span class="popup_add_to_cart_text">
+        CHOOSE OPTIONS
+      </span>
+
+    </button>
+
+  {% endform %}
+
+</div>
+
+
+<!-- ==========================================================
+     CURRENT PRODUCT JSON
+     ========================================================== -->
+
+<script
+  type="application/json"
+  class="popup-product-json"
+>
+  {{ product | json }}
+</script>
+
+
+<!-- ==========================================================
+     AUTO ADDED PRODUCT JSON
+     ========================================================== -->
+
+{% if auto_added_product != blank %}
+
+  <script
+    type="application/json"
+    class="auto-added-product-json"
+  >
+    {{ auto_added_product | json }}
+  </script>
+
+{% endif %}
+
 <script>
 (function () {
 
