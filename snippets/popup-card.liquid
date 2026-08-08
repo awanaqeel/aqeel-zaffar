@@ -18,9 +18,9 @@
 
 </div>
 
+
 {% form 'product', product, class: 'popup_product_form' %}
 
-  <!-- Current selected variant -->
   <input
     type="hidden"
     name="id"
@@ -43,6 +43,7 @@
             {{ option.name }}
           </label>
 
+
           {% if forloop.first %}
 
             <div class="popup_select_wrapper">
@@ -53,6 +54,7 @@
               >
 
                 {% for value in option.values %}
+
                   <option
                     value="{{ value | escape }}"
                     {% if option.selected_value == value %}
@@ -61,6 +63,7 @@
                   >
                     {{ value }}
                   </option>
+
                 {% endfor %}
 
               </select>
@@ -68,6 +71,7 @@
               <span class="popup_select_arrow">↓</span>
 
             </div>
+
 
           {% else %}
 
@@ -100,8 +104,6 @@
   {% endunless %}
 
 
-  <!-- Add To Cart -->
-
   <button
     type="submit"
     name="add"
@@ -133,19 +135,21 @@
 {% endform %}
 
 
-
-  <script type="application/json" class="popup-product-variants">
+<!-- Current product variants -->
+<script type="application/json" class="popup-product-variants">
   {{ product.variants | json }}
 </script>
 
-{% if section.settings.select_product != blank %}
+
+<!-- Automatic product variants -->
+{% if auto_product != blank %}
 
   <script type="application/json" class="popup-auto-product-data">
     {
-      "product_id": {{ section.settings.select_product.id | json }},
-      "product_title": {{ section.settings.select_product.title | json }},
-      "options": {{ section.settings.select_product.options | json }},
-      "variants": {{ section.settings.select_product.variants | json }}
+      "product_id": {{ auto_product.id | json }},
+      "product_title": {{ auto_product.title | json }},
+      "options": {{ auto_product.options | json }},
+      "variants": {{ auto_product.variants | json }}
     }
   </script>
 
