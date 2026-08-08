@@ -751,3 +751,242 @@ body.quick-view-open {
 }
 {% endschema %}
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function initPopupVariants() {
+
+    document.querySelectorAll('.popup_product_form').forEach(function (form) {
+
+      if (form.dataset.variantHandlerLoaded === 'true') {
+        return;
+      }
+
+      form.dataset.variantHandlerLoaded = 'true';
+
+      var variantInput = form.querySelector('.popup_variant_id');
+
+      if (!variantInput) {
+        return;
+      }
+
+      var popup = form.closest('.product_popup');
+
+      if (!popup) {
+        return;
+      }
+
+      var variantElement = popup.querySelector('.popup-product-variants');
+
+      if (!variantElement) {
+        return;
+      }
+
+      var variants;
+
+      try {
+        variants = JSON.parse(variantElement.textContent);
+      } catch (error) {
+        console.error('Product variant JSON error:', error);
+        return;
+      }
+
+
+      /*
+       * Get currently selected options
+       */
+      function getSelectedOptions() {
+
+        var options = [];
+
+        form.querySelectorAll('.popup_option_select').forEach(function (select) {
+
+          var index = parseInt(select.dataset.optionIndex);
+
+          options[index] = select.value;
+
+        });
+
+
+        form.querySelectorAll('.popup_option_button.is-selected').forEach(function (button) {
+
+          var index = parseInt(button.dataset.optionIndex);
+
+          options[index] = button.dataset.optionValue;
+
+        });
+
+
+        return options;
+      }
+
+
+      /*
+       * Find exact Shopify variant
+       */
+      function findVariant(options) {
+
+        return variants.find(function (variant) {
+
+          if (!variant.options) {
+            return false;
+          }
+
+          return variant.options.every(function (value, index) {
+
+            return String(value) === String(options[index]);
+
+          });
+
+        });
+
+      }
+
+
+      /*
+       * Update hidden variant ID
+       */
+      function updateVariant() {
+
+        var selectedOptions = getSelectedOptions();
+
+        var matchedVariant = findVariant(selectedOptions);
+
+        if (!matchedVariant) {
+
+          console.warn(
+            'Variant not found:',
+            selectedOptions
+          );
+
+          variantInput.value = '';
+
+          return;
+
+        }
+
+
+        /*
+         * THIS IS THE IMPORTANT PART
+         *
+         * Hidden input now receives the actual
+         * selected variant ID.
+         */
+        variantInput.value = matchedVariant.id;
+
+
+        /*
+         * Store selected options on form
+         */
+        form.dataset.selectedOptions =
+          JSON.stringify(selectedOptions);
+
+
+        /*
+         * Update Add To Cart button
+         */
+        var button =
+          form.querySelector('.popup_add_to_cart');
+
+        var buttonText =
+          form.querySelector('.popup_add_to_cart_text');
+
+
+        if (button) {
+
+          if (matchedVariant.available) {
+
+            button.disabled = false;
+
+            if (buttonText) {
+
+              buttonText.innerHTML =
+                'ADD TO CART <span class="popup_add_to_cart_arrow">&xrarr;</span>';
+
+            }
+
+          } else {
+
+            button.disabled = true;
+
+            if (buttonText) {
+              buttonText.textContent = 'SOLD OUT';
+            }
+
+          }
+
+        }
+
+      }
+
+
+      /*
+       * Select option change
+       */
+      form.querySelectorAll('.popup_option_select').forEach(function (select) {
+
+        select.addEventListener('change', function () {
+
+          updateVariant();
+
+        });
+
+      });
+
+
+      /*
+       * Button option change
+       */
+      form.querySelectorAll('.popup_option_button').forEach(function (button) {
+
+        button.addEventListener('click', function () {
+
+          var index = button.dataset.optionIndex;
+
+
+          form.querySelectorAll(
+            '.popup_option_button[data-option-index="' + index + '"]'
+          ).forEach(function (otherButton) {
+
+            otherButton.classList.remove('is-selected');
+
+          });
+
+
+          button.classList.add('is-selected');
+
+
+          updateVariant();
+
+        });
+
+      });
+
+
+      /*
+       * Initial variant
+       */
+      updateVariant();
+
+    });
+
+  }
+
+
+  initPopupVariants();
+
+
+  /*
+   * Shopify Theme Editor
+   */
+  document.addEventListener(
+    'shopify:section:load',
+    function () {
+
+      initPopupVariants();
+
+    }
+  );
+
+});
+</script>
