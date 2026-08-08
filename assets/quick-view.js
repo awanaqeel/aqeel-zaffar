@@ -93,7 +93,7 @@
     this.shouldAutoAdd = false;
 
     this.addToCartBtn = popupEl.querySelector('.popup_add_to_cart');
-    this.priceEl = popupEl.querySelector('.popup_product_price');
+    // this.priceEl = popupEl.querySelector('.popup_product_price');
 
     this.bindEvents();
     this.preselectDefaults();
@@ -191,9 +191,9 @@
     this.currentVariant = variant;
 
     if (variant) {
-      if (this.priceEl) {
-        this.priceEl.textContent = formatMoney(variant.price, this.moneyFormat);
-      }
+    //   if (this.priceEl) {
+    //     this.priceEl.textContent = formatMoney(variant.price, this.moneyFormat);
+    //   }
       if (this.addToCartBtn) {
         this.addToCartBtn.disabled = !variant.available;
         var textEl = this.addToCartBtn.querySelector('.popup_add_to_cart_text');
