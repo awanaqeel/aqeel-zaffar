@@ -1,51 +1,24 @@
-{% comment %}
-  ============================================================
-  QUICK VIEW PRODUCT POPUP
-  ============================================================
-{% endcomment %}
-
-{% assign auto_added_product = section.settings.select_product %}
+{% assign auto_added_product = section.settings.select_product.selected_or_first_available_variant.id %}
 
 <div class="popup_product_content">
-
-  <!-- ========================================================
-       CLOSE BUTTON
-       ======================================================== -->
-
-  <button
-    type="button"
-    class="product_popup_close"
-    id="close-popup-{{ product.id }}"
-    aria-label="Close"
-  >
+  <div class="product_popup_close" id="close-popup-{{ product.id }}">
     <img
       src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
-      alt="Close"
+      alt="close_icon"
     >
-  </button>
-
-
-  <!-- ========================================================
-       PRODUCT IMAGE + INFORMATION
-       ======================================================== -->
+  </div>
 
   <div class="image_with_info">
-
     <!-- Product Image -->
     <div class="popup_product_image">
-
       {% if product.featured_image %}
-
         <img
           src="{{ product.featured_image | image_url: width: 800 }}"
           alt="{{ product.featured_image.alt | default: product.title | escape }}"
           loading="lazy"
         >
-
       {% endif %}
-
     </div>
-
 
     <!-- Product Information -->
     <div class="popup_product_info">
@@ -55,58 +28,33 @@
         {{ product.title }}
       </h3>
 
-
       <!-- Product Price -->
       <div class="popup_product_price">
         {{ product.selected_or_first_available_variant.price | money }}
       </div>
 
-
-      <!-- Product Description -->
+      <!-- Description -->
       {% if product.description != blank %}
-
         <div class="popup_product_description">
           {{ product.description | strip_html | truncatewords: 30 }}
         </div>
-
       {% endif %}
 
     </div>
-
   </div>
 
-
-  <!-- ========================================================
-       PRODUCT FORM
-       ======================================================== -->
-
-  {% form 'product',
-    product,
-    class: 'popup_product_form'
-  %}
-
-    <!--
-      IMPORTANT:
-      This value is intentionally empty initially.
-
-      We do NOT want Shopify to use the first available
-      variant when the customer has not selected a variant.
-    -->
+  <!-- Product Form -->
+  {% form 'product', product, class: 'popup_product_form' %}
 
     <input
       type="hidden"
       name="id"
       class="popup_variant_id"
-      value=""
+      value="{{ product.selected_or_first_available_variant.id }}"
     >
 
-
-    <!-- ======================================================
-         PRODUCT OPTIONS
-         ====================================================== -->
-
+    <!-- Product Options -->
     {% unless product.has_only_default_variant %}
-
       <div class="popup_product_options">
 
         {% for option in product.options_with_values %}
@@ -114,74 +62,50 @@
           <div
             class="popup_product_option"
             data-option-index="{{ forloop.index0 }}"
-            data-option-name="{{ option.name | escape }}"
           >
 
             <label class="popup_option_label">
               {{ option.name }}
             </label>
 
-
             {% if forloop.first %}
 
-              <!-- ============================================
-                   FIRST OPTION - SELECT
-                   ============================================ -->
-
+              <!-- First option as select -->
               <div class="popup_select_wrapper">
-
                 <select
                   class="popup_option_select"
                   data-option-index="{{ forloop.index0 }}"
                 >
 
-                  <option
-                    value=""
-                    disabled
-                    selected
-                  >
-                    Choose your size
-                  </option>
-
-
                   {% for value in option.values %}
-
                     <option
                       value="{{ value | escape }}"
+                      {% if option.selected_value == value %}
+                        selected
+                      {% endif %}
                     >
                       {{ value }}
                     </option>
-
                   {% endfor %}
 
                 </select>
 
-                <span class="popup_select_arrow">
-                  ↓
-                </span>
-
+                <span class="popup_select_arrow">↓</span>
               </div>
-
 
             {% else %}
 
-
-              <!-- ============================================
-                   OTHER OPTIONS - BUTTONS
-                   ============================================ -->
-
+              <!-- Other options as buttons -->
               <div class="popup_option_buttons">
 
                 {% for value in option.values %}
 
                   <button
                     type="button"
-                    class="popup_option_button"
+                    class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                    style="border-left: 4px solid {{ value }}"
                     data-option-value="{{ value | escape }}"
                     data-option-index="{{ forloop.parentloop.index0 }}"
-                    {% if option.name | downcase == 'color' %}
-                      style="border-left: 4px solid {{ value }}"
-                    {% endif %}
                   >
                     {{ value }}
                   </button>
@@ -197,1494 +121,653 @@
         {% endfor %}
 
       </div>
-
     {% endunless %}
 
-
-    <!-- ======================================================
-         ADD TO CART
-         ====================================================== -->
-
+    <!-- Add To Cart -->
     <button
       type="submit"
       name="add"
       class="popup_add_to_cart custom-banner__button"
-      disabled
+      {% unless product.selected_or_first_available_variant.available %}
+        disabled
+      {% endunless %}
     >
 
       <span class="popup_add_to_cart_text">
-        CHOOSE OPTIONS
+        {% if product.selected_or_first_available_variant.available %}
+          ADD TO CART
+          <span class="popup_add_to_cart_arrow"> &xrarr; </span>
+        {% else %}
+          SOLD OUT
+        {% endif %}
       </span>
 
     </button>
 
   {% endform %}
 
+  <!-- Product JSON (kept inside the popup content so each popup carries its own data) -->
+  <script type="application/json" class="popup-product-json">
+    {{ product | json }}
+  </script>
+
 </div>
 
 
-<!-- ==========================================================
-     CURRENT PRODUCT JSON
-     ========================================================== -->
-
-<script
-  type="application/json"
-  class="popup-product-json"
->
-  {{ product | json }}
-</script>
-
-
-<!-- ==========================================================
-     AUTO ADDED PRODUCT JSON
-     ========================================================== -->
-
-{% if auto_added_product != blank %}
-
-  <script
-    type="application/json"
-    class="auto-added-product-json"
-  >
-    {{ auto_added_product | json }}
-  </script>
-
-{% endif %}
-
-
-<script>
+{% comment %} <script>
 (function () {
 
   /*
-   * ============================================================
-   * IMPORTANT
-   * ============================================================
+   * IMPORTANT:
    *
-   * This popup snippet can exist multiple times on the page.
+   * This section can render multiple times (once per product),
+   * and this specific popup markup can ALSO be re-injected later
+   * by AJAX (filters, sorting, infinite scroll, "related products"
+   * re-renders, etc).
    *
-   * Therefore we install the global event handlers ONLY ONCE.
+   * FIX (bugs #2 and #3):
+   * The previous version only ever initialized popups that existed
+   * in the DOM at first page load ("window.__quickViewInitialized"
+   * blocked every later run entirely). Any popup added afterwards
+   * never got its JS attached, so the browser fell back to native
+   * form submission: the hidden variant input was never updated
+   * (always added the first/default variant), and nothing blocked
+   * rapid/duplicate clicks (so quantity could end up 2, 3, 4...).
    *
-   * Product-specific variant handling is performed using
-   * event delegation.
+   * We now keep the "attach global listeners once" guard, but we
+   * ALSO watch the DOM with a MutationObserver so ANY popup that
+   * appears at ANY time gets initialized, not just the ones present
+   * on first load.
    */
 
-  if (window.__CUSTOM_QUICK_VIEW_INITIALIZED__) {
-    return;
-  }
-
-  window.__CUSTOM_QUICK_VIEW_INITIALIZED__ = true;
+  var AUTO_ADDED_PRODUCT_ID = {{ auto_added_product | default: 0 }};
 
 
-  /* ============================================================
-   * HELPER - CLOSE ALL POPUPS
-   * ============================================================ */
+  /* =========================================================
+   * HELPER: CLOSE ALL POPUPS
+   * ========================================================= */
 
   function closeAllPopups() {
 
-    document
-      .querySelectorAll('.product_popup.is-open')
-      .forEach(function (popup) {
+    document.querySelectorAll('.product_popup.is-open').forEach(function (popup) {
 
-        popup.classList.remove('is-open');
+      popup.classList.remove('is-open');
+      popup.setAttribute('aria-hidden', 'true');
 
-        popup.setAttribute(
-          'aria-hidden',
-          'true'
-        );
+      /*
+       * Defensive reset: if a popup is force-closed mid "ADDING..."
+       * state, don't leave its button stuck disabled next time it
+       * opens.
+       */
+      var form = popup.querySelector('.popup_product_form');
+      if (form && form.dataset.addingToCart === 'true') {
 
-      });
+        form.dataset.addingToCart = 'false';
 
+        var addButton = form.querySelector('.popup_add_to_cart');
+        var addButtonText = form.querySelector('.popup_add_to_cart_text');
 
-    document.body.classList.remove(
-      'quick-view-open'
-    );
+        if (addButton) {
+          addButton.disabled = false;
+        }
 
+        if (addButtonText) {
+          addButtonText.innerHTML =
+            'ADD TO CART <span class="popup_add_to_cart_arrow"> &xrarr; </span>';
+        }
+      }
+
+    });
+
+    document.body.classList.remove('quick-view-open');
   }
 
 
-  /* ============================================================
-   * HELPER - GET PRODUCT DATA
-   * ============================================================ */
+  /* =========================================================
+   * INITIALIZE A SINGLE PRODUCT POPUP
+   * ========================================================= */
 
-  function getProductData(popup) {
+  function initializeProductPopup(content) {
+
+    if (!content || content.dataset.quickViewInitialized === 'true') {
+      return;
+    }
+
+    content.dataset.quickViewInitialized = 'true';
+
+
+    var form = content.querySelector('.popup_product_form');
+
+    if (!form) {
+      return;
+    }
+
+
+    var popup = content.closest('.product_popup');
 
     if (!popup) {
-      return null;
+      return;
     }
 
 
-    var element =
-      popup.querySelector(
-        '.popup-product-json'
-      );
+    var variantInput = form.querySelector('.popup_variant_id');
+    var addButton = form.querySelector('.popup_add_to_cart');
+    var addButtonText = form.querySelector('.popup_add_to_cart_text');
+    var priceElement = popup.querySelector('.popup_product_price');
+    var productDataElement = content.querySelector('.popup-product-json');
 
 
-    if (!element) {
-      return null;
+    if (!variantInput || !productDataElement) {
+      return;
     }
 
+
+    /* =========================================================
+     * PRODUCT DATA
+     * ========================================================= */
+
+    var productData;
 
     try {
 
-      return JSON.parse(
-        element.textContent
-      );
+      productData = JSON.parse(productDataElement.textContent);
 
     } catch (error) {
 
-      console.error(
-        'Quick View: Product JSON error',
-        error
-      );
-
-      return null;
-
-    }
-
-  }
-
-
-  /* ============================================================
-   * HELPER - GET AUTO PRODUCT DATA
-   * ============================================================ */
-
-  function getAutoProductData(popup) {
-
-    if (!popup) {
-      return null;
+      console.error('Quick View product JSON error:', error);
+      return;
     }
 
 
-    var element =
-      popup.querySelector(
-        '.auto-added-product-json'
-      );
-
-
-    if (!element) {
-      return null;
+    if (!productData || !productData.variants) {
+      return;
     }
 
 
-    try {
+    /* =========================================================
+     * GET SELECTED OPTIONS
+     * ========================================================= */
 
-      return JSON.parse(
-        element.textContent
-      );
+    function getSelectedOptions() {
 
-    } catch (error) {
+      var selectedOptions = [];
 
-      console.error(
-        'Quick View: Auto product JSON error',
-        error
-      );
+      content
+        .querySelectorAll('.popup_product_option')
+        .forEach(function (optionContainer) {
 
-      return null;
-
-    }
-
-  }
-
-
-  /* ============================================================
-   * OPEN QUICK VIEW
-   * ============================================================ */
-
-  document.addEventListener(
-    'click',
-    function (event) {
-
-      var button =
-        event.target.closest(
-          '.quick_view_btn'
-        );
-
-
-      if (!button) {
-        return;
-      }
-
-
-      event.preventDefault();
-
-
-      var productId =
-        button.getAttribute(
-          'data-product-id'
-        );
-
-
-      if (!productId) {
-        return;
-      }
-
-
-      var popup =
-        document.querySelector(
-          '#product-popup-' + productId
-        );
-
-
-      if (!popup) {
-
-        console.error(
-          'Quick View popup not found:',
-          productId
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * Close any popup currently open.
-       */
-
-      closeAllPopups();
-
-
-      /*
-       * Open selected popup.
-       */
-
-      popup.classList.add(
-        'is-open'
-      );
-
-      popup.setAttribute(
-        'aria-hidden',
-        'false'
-      );
-
-      document.body.classList.add(
-        'quick-view-open'
-      );
-
-    }
-  );
-
-
-  /* ============================================================
-   * CLOSE BUTTON
-   * ============================================================ */
-
-  document.addEventListener(
-    'click',
-    function (event) {
-
-      var closeButton =
-        event.target.closest(
-          '.product_popup_close'
-        );
-
-
-      if (!closeButton) {
-        return;
-      }
-
-
-      event.preventDefault();
-
-
-      closeAllPopups();
-
-    }
-  );
-
-
-  /* ============================================================
-   * OVERLAY CLOSE
-   * ============================================================ */
-
-  document.addEventListener(
-    'click',
-    function (event) {
-
-      var overlay =
-        event.target.closest(
-          '.product_popup_overlay'
-        );
-
-
-      if (!overlay) {
-        return;
-      }
-
-
-      closeAllPopups();
-
-    }
-  );
-
-
-  /* ============================================================
-   * ESC KEY
-   * ============================================================ */
-
-  document.addEventListener(
-    'keydown',
-    function (event) {
-
-      if (event.key !== 'Escape') {
-        return;
-      }
-
-
-      closeAllPopups();
-
-    }
-  );
-
-
-  /* ============================================================
-   * GET SELECTED OPTIONS
-   * ============================================================ */
-
-  function getSelectedOptions(content) {
-
-    var options = [];
-
-
-    content
-      .querySelectorAll(
-        '.popup_product_option'
-      )
-      .forEach(function (optionContainer) {
-
-        var index =
-          parseInt(
-            optionContainer.getAttribute(
-              'data-option-index'
-            ),
+          var index = parseInt(
+            optionContainer.getAttribute('data-option-index'),
             10
           );
 
-
-        /*
-         * Check selected button.
-         */
-
-        var selectedButton =
-          optionContainer.querySelector(
+          var selectedButton = optionContainer.querySelector(
             '.popup_option_button.is-selected'
           );
 
+          var select = optionContainer.querySelector('.popup_option_select');
 
-        /*
-         * Check select.
-         */
+          if (selectedButton) {
 
-        var select =
-          optionContainer.querySelector(
-            '.popup_option_select'
-          );
+            selectedOptions[index] = selectedButton.getAttribute('data-option-value');
 
+          } else if (select) {
 
-        if (selectedButton) {
-
-          options[index] =
-            selectedButton.getAttribute(
-              'data-option-value'
-            );
-
-        }
-        else if (select) {
-
-          options[index] =
-            select.value;
-
-        }
-
-      });
-
-
-    return options;
-
-  }
-
-
-  /* ============================================================
-   * FIND SELECTED VARIANT
-   * ============================================================ */
-
-  function findSelectedVariant(
-    productData,
-    selectedOptions
-  ) {
-
-    if (
-      !productData ||
-      !productData.variants
-    ) {
-
-      return null;
-
-    }
-
-
-    /*
-     * Make sure every option has a value.
-     */
-
-    if (
-      selectedOptions.length !==
-      productData.options.length
-    ) {
-
-      return null;
-
-    }
-
-
-    var allSelected =
-      selectedOptions.every(
-        function (value) {
-
-          return (
-            value !== undefined &&
-            value !== null &&
-            value !== ''
-          );
-
-        }
-      );
-
-
-    if (!allSelected) {
-      return null;
-    }
-
-
-    /*
-     * Find exact matching variant.
-     */
-
-    return productData.variants.find(
-      function (variant) {
-
-        return variant.options.every(
-          function (
-            optionValue,
-            index
-          ) {
-
-            return (
-              String(optionValue)
-                .trim()
-                .toLowerCase() ===
-
-              String(
-                selectedOptions[index]
-              )
-                .trim()
-                .toLowerCase()
-            );
+            selectedOptions[index] = select.value;
 
           }
-        );
 
-      }
-    ) || null;
+        });
 
-  }
-
-
-  /* ============================================================
-   * UPDATE CURRENT VARIANT
-   * ============================================================ */
-
-  function updateVariant(content) {
-
-    if (!content) {
-      return;
-    }
-
-
-    var popup =
-      content.closest(
-        '.product_popup'
-      );
-
-
-    var form =
-      content.querySelector(
-        '.popup_product_form'
-      );
-
-
-    if (!popup || !form) {
-      return;
-    }
-
-
-    var variantInput =
-      form.querySelector(
-        '.popup_variant_id'
-      );
-
-
-    var addButton =
-      form.querySelector(
-        '.popup_add_to_cart'
-      );
-
-
-    var buttonText =
-      form.querySelector(
-        '.popup_add_to_cart_text'
-      );
-
-
-    var priceElement =
-      popup.querySelector(
-        '.popup_product_price'
-      );
-
-
-    var productData =
-      getProductData(popup);
-
-
-    if (
-      !variantInput ||
-      !productData
-    ) {
-
-      return;
+      return selectedOptions;
 
     }
 
 
-    var selectedOptions =
-      getSelectedOptions(content);
+    /* =========================================================
+     * FIND VARIANT
+     * ========================================================= */
 
+    function findSelectedVariant() {
 
-    console.log(
-      'Quick View selected options:',
-      selectedOptions
-    );
+      var selectedOptions = getSelectedOptions();
 
-
-    var variant =
-      findSelectedVariant(
-        productData,
-        selectedOptions
-      );
-
-
-    /*
-     * ==========================================================
-     * NO VALID VARIANT
-     * ==========================================================
-     */
-
-    if (!variant) {
-
-      /*
-       * VERY IMPORTANT:
-       *
-       * Clear the hidden ID so Shopify cannot
-       * fall back to the first variant.
-       */
-
-      variantInput.value = '';
-
-
-      if (addButton) {
-
-        addButton.disabled = true;
-
+      if (
+        !selectedOptions.length ||
+        selectedOptions.some(function (value) {
+          return typeof value === 'undefined';
+        })
+      ) {
+        return null;
       }
 
+      var variant = productData.variants.find(function (variant) {
 
-      if (buttonText) {
+        return variant.options.every(function (optionValue, index) {
 
-        buttonText.textContent =
-          'CHOOSE OPTIONS';
-
-      }
-
-
-      return;
-
-    }
-
-
-    /*
-     * ==========================================================
-     * VALID VARIANT FOUND
-     * ==========================================================
-     */
-
-
-    /*
-     * THIS IS THE ACTUAL SHOPIFY VARIANT ID.
-     */
-
-    variantInput.value =
-      String(variant.id);
-
-
-    console.log(
-      'Quick View selected variant ID:',
-      variant.id
-    );
-
-
-    /*
-     * Update price.
-     */
-
-    if (
-      priceElement &&
-      typeof Shopify !== 'undefined' &&
-      typeof Shopify.formatMoney ===
-        'function'
-    ) {
-
-      priceElement.innerHTML =
-        Shopify.formatMoney(
-          variant.price,
-          Shopify.money_format
-        );
-
-    }
-
-
-    /*
-     * Update button.
-     */
-
-    if (addButton) {
-
-      addButton.disabled =
-        !variant.available;
-
-    }
-
-
-    if (buttonText) {
-
-      buttonText.textContent =
-        variant.available
-          ? 'ADD TO CART'
-          : 'SOLD OUT';
-
-    }
-
-  }
-
-
-  /* ============================================================
-   * OPTION BUTTON CLICK
-   * ============================================================ */
-
-  document.addEventListener(
-    'click',
-    function (event) {
-
-      var button =
-        event.target.closest(
-          '.popup_option_button'
-        );
-
-
-      if (!button) {
-        return;
-      }
-
-
-      event.preventDefault();
-
-
-      var content =
-        button.closest(
-          '.popup_product_content'
-        );
-
-
-      if (!content) {
-        return;
-      }
-
-
-      var optionIndex =
-        button.getAttribute(
-          'data-option-index'
-        );
-
-
-      /*
-       * Remove selected class from same option.
-       */
-
-      content
-        .querySelectorAll(
-          '.popup_option_button[data-option-index="' +
-          optionIndex +
-          '"]'
-        )
-        .forEach(function (item) {
-
-          item.classList.remove(
-            'is-selected'
+          return (
+            String(optionValue).trim() === String(selectedOptions[index]).trim()
           );
 
         });
 
+      });
 
-      /*
-       * Select clicked value.
-       */
-
-      button.classList.add(
-        'is-selected'
-      );
-
-
-      /*
-       * Recalculate variant.
-       */
-
-      updateVariant(content);
-
-    }
-  );
-
-
-  /* ============================================================
-   * SELECT CHANGE
-   * ============================================================ */
-
-  document.addEventListener(
-    'change',
-    function (event) {
-
-      var select =
-        event.target.closest(
-          '.popup_option_select'
-        );
-
-
-      if (!select) {
-        return;
-      }
-
-
-      var content =
-        select.closest(
-          '.popup_product_content'
-        );
-
-
-      if (!content) {
-        return;
-      }
-
-
-      /*
-       * Recalculate variant.
-       */
-
-      updateVariant(content);
-
-    }
-  );
-
-
-  /* ============================================================
-   * FIND AUTOMATIC PRODUCT VARIANT
-   * ============================================================ */
-
-  function findAutoProductVariant(
-    autoProduct
-  ) {
-
-    if (
-      !autoProduct ||
-      !autoProduct.variants
-    ) {
-
-      return null;
+      return variant || null;
 
     }
 
 
-    /*
-     * We need:
+    /* =========================================================
+     * UPDATE VARIANT
      *
-     * Color = Black
-     *
-     * Size = Medium / M
-     *
-     * The option order does not matter.
-     */
+     * FIX (bug #2): this always runs whenever an option is
+     * clicked/changed, so the hidden input is kept in sync with
+     * whatever is currently selected in the UI (rather than
+     * staying stuck on the default variant when the popup was
+     * never initialized in the first place).
+     * ========================================================= */
 
-    var variant =
-      autoProduct.variants.find(
-        function (variant) {
+    function updateVariant() {
 
-          var normalizedOptions =
-            variant.options.map(
-              function (value) {
+      var variant = findSelectedVariant();
 
-                return String(value)
-                  .trim()
-                  .toLowerCase();
+      if (!variant) {
 
-              }
-            );
+        variantInput.value = '';
 
-
-          var hasBlack =
-            normalizedOptions.indexOf(
-              'black'
-            ) !== -1;
-
-
-          var hasMedium =
-            normalizedOptions.indexOf(
-              'medium'
-            ) !== -1 ||
-            normalizedOptions.indexOf(
-              'm'
-            ) !== -1;
-
-
-          return (
-            hasBlack &&
-            hasMedium
-          );
-
+        if (addButton) {
+          addButton.disabled = true;
         }
-      );
 
-
-    return variant || null;
-
-  }
-
-
-  /* ============================================================
-   * CHECK IF CURRENT PRODUCT IS MEDIUM + BLACK
-   * ============================================================ */
-
-  function isMediumBlackSelected(
-    content
-  ) {
-
-    var selectedOptions =
-      getSelectedOptions(content);
-
-
-    var normalized =
-      selectedOptions.map(
-        function (value) {
-
-          return value
-            ? String(value)
-                .trim()
-                .toLowerCase()
-            : '';
-
+        if (addButtonText) {
+          addButtonText.textContent = 'UNAVAILABLE';
         }
-      );
 
-
-    /*
-     * Accept both:
-     *
-     * M
-     * Medium
-     */
-
-    var hasMedium =
-      normalized.indexOf('m') !== -1 ||
-      normalized.indexOf('medium') !== -1;
-
-
-    var hasBlack =
-      normalized.indexOf('black') !== -1;
-
-
-    return (
-      hasMedium &&
-      hasBlack
-    );
-
-  }
-
-
-  /* ============================================================
-   * ADD TO CART
-   * ============================================================ */
-
-  document.addEventListener(
-    'submit',
-    function (event) {
-
-      var form =
-        event.target.closest(
-          '.popup_product_form'
-        );
-
-
-      if (!form) {
         return;
       }
 
+      variantInput.value = String(variant.id);
 
-      event.preventDefault();
-      event.stopImmediatePropagation();
+      if (priceElement && typeof Shopify !== 'undefined' && Shopify.formatMoney) {
 
-
-      /*
-       * Prevent duplicate submissions.
-       */
-
-      if (
-        form.dataset.addingToCart ===
-        'true'
-      ) {
-
-        return;
+        priceElement.innerHTML = Shopify.formatMoney(variant.price, Shopify.money_format);
 
       }
-
-
-      var content =
-        form.closest(
-          '.popup_product_content'
-        );
-
-
-      var popup =
-        content
-          ? content.closest(
-              '.product_popup'
-            )
-          : null;
-
-
-      var variantInput =
-        form.querySelector(
-          '.popup_variant_id'
-        );
-
-
-      var addButton =
-        form.querySelector(
-          '.popup_add_to_cart'
-        );
-
-
-      var buttonText =
-        form.querySelector(
-          '.popup_add_to_cart_text'
-        );
-
-
-      if (
-        !content ||
-        !popup ||
-        !variantInput
-      ) {
-
-        return;
-
-      }
-
-
-      /*
-       * ALWAYS READ THE CURRENT
-       * VARIANT ID.
-       */
-
-      var selectedVariantId =
-        variantInput.value;
-
-
-      console.log(
-        'FINAL SELECTED VARIANT:',
-        selectedVariantId
-      );
-
-
-      /*
-       * Never allow empty variant.
-       */
-
-      if (!selectedVariantId) {
-
-        console.error(
-          'Quick View: No variant selected.'
-        );
-
-        updateVariant(content);
-
-        return;
-
-      }
-
-
-      /*
-       * Lock the form.
-       */
-
-      form.dataset.addingToCart =
-        'true';
-
 
       if (addButton) {
+        addButton.disabled = !variant.available;
+      }
 
+      if (addButtonText) {
+        addButtonText.textContent = variant.available ? 'ADD TO CART' : 'SOLD OUT';
+      }
+
+    }
+
+
+    /* =========================================================
+     * OPTION BUTTONS
+     * ========================================================= */
+
+    content.querySelectorAll('.popup_option_button').forEach(function (button) {
+
+      button.addEventListener('click', function () {
+
+        var index = this.getAttribute('data-option-index');
+
+        content
+          .querySelectorAll('.popup_option_button[data-option-index="' + index + '"]')
+          .forEach(function (item) {
+            item.classList.remove('is-selected');
+          });
+
+        this.classList.add('is-selected');
+
+        updateVariant();
+
+      });
+
+    });
+
+
+    /* =========================================================
+     * SELECT OPTIONS
+     * ========================================================= */
+
+    content.querySelectorAll('.popup_option_select').forEach(function (select) {
+
+      select.addEventListener('change', function () {
+        updateVariant();
+      });
+
+    });
+
+
+    /* =========================================================
+     * ADD TO CART
+     *
+     * FIX (bug #3): guarded on TWO levels now -
+     *  1) a dataset flag so a second submit event on the same
+     *     form (e.g. double click before the button visually
+     *     disables) is ignored outright.
+     *  2) the button is disabled synchronously, before anything
+     *     async happens, so no additional native submits can slip
+     *     through while a request is in flight.
+     * ========================================================= */
+
+    form.addEventListener('submit', function (event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (form.dataset.addingToCart === 'true') {
+        return;
+      }
+
+      var selectedVariantId = variantInput.value;
+
+      if (!selectedVariantId) {
+        console.error('Quick View: No variant selected.');
+        return;
+      }
+
+      form.dataset.addingToCart = 'true';
+
+      if (addButton) {
         addButton.disabled = true;
+      }
 
+      if (addButtonText) {
+        addButtonText.textContent = 'ADDING...';
       }
 
 
-      if (buttonText) {
+      /* =====================================================
+       * GET CURRENT SELECTED OPTIONS
+       * ===================================================== */
 
-        buttonText.textContent =
-          'ADDING...';
+      var selectedOptions = getSelectedOptions();
 
-      }
+      var normalizedOptions = selectedOptions.map(function (value) {
+        return value ? String(value).trim().toLowerCase() : '';
+      });
+
+      var hasSizeM = normalizedOptions.indexOf('m') !== -1;
+      var hasBlack = normalizedOptions.indexOf('black') !== -1;
 
 
-      /* ========================================================
-         CART ITEMS
-         ======================================================== */
+      /* =====================================================
+       * BUILD CART ITEMS
+       * ===================================================== */
 
       var items = [
-
         {
-          id: Number(
-            selectedVariantId
-          ),
-
+          id: Number(selectedVariantId),
           quantity: 1
         }
-
       ];
 
-
-      /* ========================================================
-         AUTO ADD PRODUCT
-         ======================================================== */
-
+      /*
+       * Size M + Color Black -> auto add the configured product,
+       * exactly once, and only if it isn't the same variant being
+       * added already.
+       */
       if (
-        isMediumBlackSelected(
-          content
-        )
+        hasSizeM &&
+        hasBlack &&
+        AUTO_ADDED_PRODUCT_ID &&
+        AUTO_ADDED_PRODUCT_ID !== Number(selectedVariantId)
       ) {
 
-        var autoProduct =
-          getAutoProductData(
-            popup
-          );
-
-
-        if (autoProduct) {
-
-          var autoVariant =
-            findAutoProductVariant(
-              autoProduct
-            );
-
-
-          if (autoVariant) {
-
-            console.log(
-              'AUTO PRODUCT:',
-              autoProduct.title
-            );
-
-
-            console.log(
-              'AUTO PRODUCT VARIANT:',
-              autoVariant
-            );
-
-
-            /*
-             * Add the exact
-             * Medium + Black variant.
-             */
-
-            items.push({
-
-              id: Number(
-                autoVariant.id
-              ),
-
-              quantity: 1
-
-            });
-
-          } else {
-
-            console.warn(
-              'Black + Medium variant was not found in the automatic product:',
-              autoProduct.title
-            );
-
-          }
-
-        }
+        items.push({
+          id: AUTO_ADDED_PRODUCT_ID,
+          quantity: 1
+        });
 
       }
 
 
-      console.log(
-        'FINAL CART ITEMS:',
-        items
-      );
+      /* =====================================================
+       * ADD TO SHOPIFY CART
+       * ===================================================== */
 
+      fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ items: items })
+      })
 
-      /* ========================================================
-         SHOPIFY AJAX CART
-         ======================================================== */
-
-      var cartUrl =
-        (
-          window.Shopify &&
-          Shopify.routes &&
-          Shopify.routes.root
-        )
-          ? Shopify.routes.root +
-            'cart/add.js'
-          : '/cart/add.js';
-
-
-      fetch(
-        cartUrl,
-        {
-          method: 'POST',
-
-          headers: {
-
-            'Content-Type':
-              'application/json',
-
-            'Accept':
-              'application/json'
-
-          },
-
-          body: JSON.stringify({
-
-            items: items
-
-          })
-
-        }
-      )
-
-
-      /* ========================================================
-         RESPONSE
-         ======================================================== */
-
-      .then(
-        function (response) {
+        .then(function (response) {
 
           if (!response.ok) {
-
-            return response
-              .json()
-              .then(
-                function (error) {
-
-                  throw error;
-
-                }
-              );
-
+            return response.json().then(function (error) {
+              throw error;
+            });
           }
-
 
           return response.json();
 
-        }
-      )
+        })
 
+        .then(function (data) {
 
-      /* ========================================================
-         SUCCESS
-         ======================================================== */
+          if (popup) {
+            popup.classList.remove('is-open');
+            popup.setAttribute('aria-hidden', 'true');
+          }
 
-      .then(
-        function (data) {
+          document.body.classList.remove('quick-view-open');
 
-          console.log(
-            'QUICK VIEW CART SUCCESS:',
-            data
-          );
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: data }));
+          document.dispatchEvent(new CustomEvent('cart:refresh', { detail: data }));
 
-
-          /*
-           * Unlock form.
-           */
-
-          form.dataset.addingToCart =
-            'false';
-
-
-          /*
-           * Close popup.
-           */
-
-          closeAllPopups();
-
-
-          /*
-           * Notify Shopify/theme.
-           */
-
-          document.dispatchEvent(
-            new CustomEvent(
-              'cart:updated',
-              {
-                detail: data
-              }
-            )
-          );
-
-
-          document.dispatchEvent(
-            new CustomEvent(
-              'cart:refresh',
-              {
-                detail: data
-              }
-            )
-          );
-
-
-          /*
-           * Update cart count if theme
-           * listens to these events.
-           */
-
-          document.dispatchEvent(
-            new CustomEvent(
-              'cart:change',
-              {
-                bubbles: true,
-                detail: data
-              }
-            )
-          );
-
-
-          /*
-           * If theme exposes a cart drawer
-           * refresh function, use it.
-           */
-
-          if (
-            typeof window.refreshCart ===
-            'function'
-          ) {
-
+          if (typeof window.refreshCart === 'function') {
             window.refreshCart();
-
           }
 
+          form.dataset.addingToCart = 'false';
 
-          /*
-           * Try to open Shopify cart drawer.
-           *
-           * If the theme doesn't support it,
-           * simply redirect to cart.
-           */
-
-          var cartDrawer =
-            document.querySelector(
-              'cart-drawer'
-            );
-
-
-          if (
-            cartDrawer &&
-            typeof cartDrawer.open ===
-              'function'
-          ) {
-
-            /*
-             * Refresh drawer contents if
-             * theme provides the method.
-             */
-
-            if (
-              typeof cartDrawer.renderContents ===
-              'function'
-            ) {
-
-              cartDrawer.renderContents(
-                data
-              );
-
-            }
-
-            cartDrawer.open();
-
-          }
-          else {
-
-            /*
-             * Reliable fallback.
-             */
-
-            window.location.href =
-              (
-                window.Shopify &&
-                Shopify.routes &&
-                Shopify.routes.root
-              )
-                ? Shopify.routes.root +
-                  'cart'
-                : '/cart';
-
+          if (addButton) {
+            addButton.disabled = false;
           }
 
-        }
-      )
+          if (addButtonText) {
+            addButtonText.innerHTML =
+              'ADD TO CART <span class="popup_add_to_cart_arrow"> &xrarr; </span>';
+          }
+
+        })
+
+        .catch(function (error) {
+
+          console.error('Quick View Add To Cart Error:', error);
+
+          form.dataset.addingToCart = 'false';
+
+          var currentVariant = findSelectedVariant();
+
+          if (addButton) {
+            addButton.disabled = !currentVariant || !currentVariant.available;
+          }
+
+          if (addButtonText) {
+            addButtonText.innerHTML =
+              'ADD TO CART <span class="popup_add_to_cart_arrow"> &xrarr; </span>';
+          }
+
+        });
+
+    });
 
 
-      /* ========================================================
-         ERROR
-         ======================================================== */
+    /* =========================================================
+     * INITIAL VARIANT SYNC
+     * ========================================================= */
 
-      .catch(
-        function (error) {
+    updateVariant();
 
-          console.error(
-            'QUICK VIEW ADD TO CART ERROR:',
-            error
-          );
+  }
 
 
-          /*
-           * Unlock form.
-           */
+  /* =========================================================
+   * GLOBAL SETUP (runs once, guarded)
+   * ========================================================= */
 
-          form.dataset.addingToCart =
-            'false';
+  if (window.__quickViewInitialized) {
+    return;
+  }
+
+  window.__quickViewInitialized = true;
 
 
-          /*
-           * Recalculate current variant
-           * and restore button.
-           */
+  /* OPEN QUICK VIEW ------------------------------------------------- */
 
-          updateVariant(
-            content
-          );
+  document.addEventListener('click', function (event) {
 
-        }
-      );
+    var quickViewButton = event.target.closest('.quick_view_btn');
 
+    if (!quickViewButton) {
+      return;
     }
-  );
+
+    event.preventDefault();
+
+    var productId = quickViewButton.getAttribute('data-product-id');
+
+    if (!productId) {
+      return;
+    }
+
+    var popup = document.querySelector('#product-popup-' + productId);
+
+    if (!popup) {
+      return;
+    }
+
+    /*
+     * FIX (bug #1): always close every other open popup first,
+     * regardless of which one was open, before showing the new one.
+     */
+    closeAllPopups();
+
+    popup.classList.add('is-open');
+    popup.setAttribute('aria-hidden', 'false');
+
+    document.body.classList.add('quick-view-open');
+
+  });
 
 
-  /* ============================================================
-   * INITIALIZE POPUPS
-   * ============================================================ */
+  /* CLOSE POPUP ------------------------------------------------------ */
 
-  function initializePopups() {
+  document.addEventListener('click', function (event) {
 
-    document
-      .querySelectorAll(
-        '.popup_product_content'
-      )
-      .forEach(
-        function (content) {
+    var closeButton = event.target.closest('.product_popup_close');
 
-          var form =
-            content.querySelector(
-              '.popup_product_form'
-            );
+    if (closeButton) {
 
+      event.preventDefault();
 
-          if (!form) {
-            return;
-          }
+      var popup = closeButton.closest('.product_popup');
 
+      if (popup) {
+        popup.classList.remove('is-open');
+        popup.setAttribute('aria-hidden', 'true');
+      }
 
-          var variantInput =
-            form.querySelector(
-              '.popup_variant_id'
-            );
+      document.body.classList.remove('quick-view-open');
 
+      return;
+    }
 
-          /*
-           * Start with no selected variant.
-           */
+    var overlay = event.target.closest('.product_popup_overlay');
 
-          if (variantInput) {
+    if (overlay) {
+      closeAllPopups();
+    }
 
-            variantInput.value = '';
-
-          }
+  });
 
 
-          /*
-           * Disable Add To Cart.
-           */
+  /* ESC KEY ------------------------------------------------------------ */
 
-          var button =
-            form.querySelector(
-              '.popup_add_to_cart'
-            );
+  document.addEventListener('keydown', function (event) {
 
+    if (event.key !== 'Escape') {
+      return;
+    }
 
-          var buttonText =
-            form.querySelector(
-              '.popup_add_to_cart_text'
-            );
+    closeAllPopups();
+
+  });
 
 
-          if (button) {
+  /* =========================================================
+   * INITIALIZE ALL EXISTING POPUPS
+   * ========================================================= */
 
-            button.disabled = true;
+  function initializeAllPopups(root) {
 
-          }
+    (root || document)
+      .querySelectorAll('.popup_product_content')
+      .forEach(function (content) {
+        initializeProductPopup(content);
+      });
+
+  }
+
+  function runInitialPass() {
+    initializeAllPopups(document);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runInitialPass);
+  } else {
+    runInitialPass();
+  }
 
 
-          if (buttonText) {
+  /* =========================================================
+   * FIX (bugs #2 and #3, root cause): watch for popups added
+   * to the page AFTER first load (AJAX filters/sorting,
+   * infinite scroll, re-rendered sections, etc.) and initialize
+   * them the moment they appear, instead of relying only on the
+   * one-time load above.
+   * ========================================================= */
 
-            buttonText.textContent =
-              'CHOOSE OPTIONS';
+  var quickViewObserver = new MutationObserver(function (mutations) {
 
-          }
+    mutations.forEach(function (mutation) {
 
+      mutation.addedNodes.forEach(function (node) {
+
+        if (node.nodeType !== 1) {
+          return;
         }
-      );
 
-  }
+        if (node.classList && node.classList.contains('popup_product_content')) {
+          initializeProductPopup(node);
+        }
 
+        if (node.querySelectorAll) {
+          node.querySelectorAll('.popup_product_content').forEach(initializeProductPopup);
+        }
 
-  /* ============================================================
-   * RUN INITIALIZATION
-   * ============================================================ */
+      });
 
-  if (
-    document.readyState ===
-    'loading'
-  ) {
+    });
 
-    document.addEventListener(
-      'DOMContentLoaded',
-      initializePopups
-    );
+  });
 
-  }
-  else {
+  quickViewObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
 
-    initializePopups();
-
-  }
 
 })();
-</script>
+</script> {% endcomment %}
