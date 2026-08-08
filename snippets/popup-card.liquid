@@ -45,87 +45,70 @@
 
     {% unless product.has_only_default_variant %}
 
-      {% assign color_option = nil %}
-      {% assign size_option = nil %}
-      {% assign other_options = '' | split: ',' %}
-
-      {% for option in product.options_with_values %}
-        {% case option.name %}
-          {% when 'Color', 'Colour' %}
-            {% assign color_option = option %}
-          {% when 'Size' %}
-            {% assign size_option = option %}
-          {% else %}
-            {% assign other_options = other_options | concat: option %}
-        {% endcase %}
-      {% endfor %}
-
-      {% assign ordered_options = '' | split: ',' %}
-      {% if color_option %}
-        {% assign ordered_options = ordered_options | concat: color_option %}
-      {% endif %}
-      {% if size_option %}
-        {% assign ordered_options = ordered_options | concat: size_option %}
-      {% endif %}
-      {% assign ordered_options = ordered_options | concat: other_options %}
-
       <div class="popup_product_options">
 
-        {% for option in ordered_options %}
-
-          <div
-            class="popup_product_option"
-            data-option-index="{{ forloop.index0 }}"
-          >
-
-            <label class="popup_option_label">
-              {{ option.name }}
-            </label>
-
-            {% if option.name == 'Size' %}
-
-              <div class="popup_select_wrapper">
-                <select
-                  class="popup_option_select"
-                  data-option-index="{{ forloop.index0 }}"
-                >
-                    <option value="" disabled selected>Choose your size</option>
-
-                  {% for value in option.values %}
-                    <option value="{{ value | escape }}">
-                      {{ value }}
-                    </option>
-                  {% endfor %}
-
-                </select>
-
-                <span class="popup_select_arrow">↓</span>
-              </div>
-
-            {% else %}
-
+        <!-- Pass 1: Color option, rendered first, as buttons -->
+        {% for option in product.options_with_values %}
+          {% if option.name == 'Color' or option.name == 'Colour' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
               <div class="popup_option_buttons">
-
                 {% for value in option.values %}
-
                   <button
                     type="button"
                     class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}{% if value == 'White' %} has-shadow-border{% endif %}"
                     style="border-left: 4px solid {{ value | handle }};"
                     data-option-value="{{ value | escape }}"
-                    data-option-index="{{ forloop.index0 }}"
+                    data-option-index="{{ option_index }}"
                   >
                     {{ value }}
                   </button>
-
                 {% endfor %}
-
               </div>
+            </div>
+          {% endif %}
+        {% endfor %}
 
-            {% endif %}
+        <!-- Pass 2: Size option, rendered second, as a dropdown -->
+        {% for option in product.options_with_values %}
+          {% if option.name == 'Size' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
+              <div class="popup_select_wrapper">
+                <select class="popup_option_select" data-option-index="{{ option_index }}">
+                  <option value="" disabled selected>Choose your size</option>
+                  {% for value in option.values %}
+                    <option value="{{ value | escape }}">{{ value }}</option>
+                  {% endfor %}
+                </select>
+                <span class="popup_select_arrow">↓</span>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
 
-          </div>
-
+        <!-- Pass 3: any other options, rendered last, as buttons -->
+        {% for option in product.options_with_values %}
+          {% unless option.name == 'Color' or option.name == 'Colour' or option.name == 'Size' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
+              <div class="popup_option_buttons">
+                {% for value in option.values %}
+                  <button
+                    type="button"
+                    class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}"
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ option_index }}"
+                  >
+                    {{ value }}
+                  </button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endunless %}
         {% endfor %}
 
       </div>
