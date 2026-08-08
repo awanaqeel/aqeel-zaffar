@@ -560,7 +560,7 @@ body.quick-view-open {
   {% endif %}
 
 
-  <div class="custom-product-grid">
+    <div class="custom-product-grid" data-money-format="{{ shop.money_format | json }}">
 
     {% for block in section.blocks %}
 
