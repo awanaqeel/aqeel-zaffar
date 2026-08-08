@@ -1,8 +1,11 @@
 {% assign auto_added_product = section.settings.select_product.selected_or_first_available_variant.id %}
 <div class="popup_product_content">
-    <div class="product_popup_close" id="close-popup-{{product.id}}">
-        <img src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863" alt="close_icon">
-    </div>
+  <div class="product_popup_close" id="close-popup-{{product.id}}">
+    <img
+      src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
+      alt="close_icon"
+    >
+  </div>
   <div class="image_with_info">
     <!-- Product Image -->
     <div class="popup_product_image">
@@ -34,95 +37,91 @@
         </div>
       {% endif %}
     </div>
- </div>
-    <!-- Product Form -->
-    {% form 'product', product, class: 'popup_product_form' %}
-      <input
-        type="hidden"
-        name="id"
-        class="popup_variant_id"
-        value="{{ product.selected_or_first_available_variant.id }}"
-      >
+  </div>
+  <!-- Product Form -->
+  {% form 'product', product, class: 'popup_product_form' %}
+    <input
+      type="hidden"
+      name="id"
+      class="popup_variant_id"
+      value="{{ product.selected_or_first_available_variant.id }}"
+    >
 
-      <!-- Product Options -->
-      {% unless product.has_only_default_variant %}
-        <div class="popup_product_options">
-          {% for option in product.options_with_values %}
-            <div
-              class="popup_product_option"
-              data-option-index="{{ forloop.index0 }}"
-            >
-              <label class="popup_option_label">
-                {{ option.name }}
-              </label>
+    <!-- Product Options -->
+    {% unless product.has_only_default_variant %}
+      <div class="popup_product_options">
+        {% for option in product.options_with_values %}
+          <div
+            class="popup_product_option"
+            data-option-index="{{ forloop.index0 }}"
+          >
+            <label class="popup_option_label">
+              {{ option.name }}
+            </label>
 
-              {% if forloop.first %}
-                
- <!-- Other options as select -->
-                <div class="popup_select_wrapper">
-                  <select
-                    class="popup_option_select"
-                    data-option-index="{{ forloop.index0 }}"
-                  >
-                    {% for value in option.values %}
-                      <option
-                        value="{{ value | escape }}"
-                        {% if option.selected_value == value %}
-                          selected
-                        {% endif %}
-                      >
-                        {{ value }}
-                      </option>
-                    {% endfor %}
-                  </select>
-
-                  <span class="popup_select_arrow"> ↓ </span>
-                </div>
-              
-
-              {% else %}
-                  <!-- First option as buttons -->
-                <div class="popup_option_buttons">
+            {% if forloop.first %}
+              <!-- Other options as select -->
+              <div class="popup_select_wrapper">
+                <select
+                  class="popup_option_select"
+                  data-option-index="{{ forloop.index0 }}"
+                >
                   {% for value in option.values %}
-                    <button
-                      type="button"
-                      class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
-                      style="border-left: 4px solid {{ value }}"
-                      data-option-value="{{ value | escape }}"
-                      data-option-index="{{ forloop.parentloop.index0 }}"
+                    <option
+                      value="{{ value | escape }}"
+                      {% if option.selected_value == value %}
+                        selected
+                      {% endif %}
                     >
                       {{ value }}
-                    </button>
+                    </option>
                   {% endfor %}
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-        </div>
+                </select>
+
+                <span class="popup_select_arrow"> ↓ </span>
+              </div>
+
+            {% else %}
+              <!-- First option as buttons -->
+              <div class="popup_option_buttons">
+                {% for value in option.values %}
+                  <button
+                    type="button"
+                    class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                    style="border-left: 4px solid {{ value }}"
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
+                  >
+                    {{ value }}
+                  </button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endunless %}
+
+    <!-- Add To Cart -->
+    <button
+      type="submit"
+      name="add"
+      class="popup_add_to_cart custom-banner__button"
+      {% unless product.selected_or_first_available_variant.available %}
+        disabled
       {% endunless %}
+    >
+      <span class="popup_add_to_cart_text">
+        {% if product.selected_or_first_available_variant.available %}
+          ADD TO CART <span class="popup_add_to_cart_arrow"> &xrarr; </span>
+        {% else %}
+          SOLD OUT
+        {% endif %}
+      </span>
 
-      <!-- Add To Cart -->
-      <button
-        type="submit"
-        name="add"
-        class="popup_add_to_cart custom-banner__button"
-        {% unless product.selected_or_first_available_variant.available %}
-          disabled
-        {% endunless %}
-      >
-        <span class="popup_add_to_cart_text">
-          {% if product.selected_or_first_available_variant.available %}
-            ADD TO CART  <span class="popup_add_to_cart_arrow"> &xrarr; </span> 
-          {% else %}
-            SOLD OUT
-          {% endif %}
-          
-        </span>
-
-        {% comment %} <span class="popup_add_to_cart_arrow"> &xrarr; </span> {% endcomment %}
-      </button>
-    {% endform %}
- 
+      {% comment %} <span class="popup_add_to_cart_arrow"> &xrarr; </span> {% endcomment %}
+    </button>
+  {% endform %}
 </div>
 
 <script
@@ -133,218 +132,315 @@
 </script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    /* =========================================
-     OPEN QUICK VIEW
-  ========================================= */
+    document.addEventListener('DOMContentLoaded', function () {
+      /* =========================================
+       OPEN QUICK VIEW
+    ========================================= */
 
-    document.querySelectorAll('.quick_view_btn').forEach(function (button) {
-      button.addEventListener('click', function () {
-        var productId = this.getAttribute('data-product-id');
+      document.querySelectorAll('.quick_view_btn').forEach(function (button) {
+        button.addEventListener('click', function () {
+          var productId = this.getAttribute('data-product-id');
 
-        var popup = document.querySelector('#product-popup-' + productId);
+          var popup = document.querySelector('#product-popup-' + productId);
+
+          if (!popup) return;
+
+          popup.classList.add('is-open');
+          popup.setAttribute('aria-hidden', 'false');
+
+          document.body.classList.add('quick-view-open');
+        });
+      });
+
+      /* =========================================
+       CLOSE POPUP
+    ========================================= */
+
+      document.querySelectorAll('.product_popup_close').forEach(function (button) {
+        button.addEventListener('click', closePopup);
+      });
+
+      document.querySelectorAll('.product_popup_overlay').forEach(function (overlay) {
+        overlay.addEventListener('click', closePopup);
+      });
+
+      function closePopup() {
+        var popup = this.closest('.product_popup');
 
         if (!popup) return;
 
-        popup.classList.add('is-open');
-        popup.setAttribute('aria-hidden', 'false');
-
-        document.body.classList.add('quick-view-open');
-      });
-    });
-
-    /* =========================================
-     CLOSE POPUP
-  ========================================= */
-
-    document.querySelectorAll('.product_popup_close').forEach(function (button) {
-      button.addEventListener('click', closePopup);
-    });
-
-    document.querySelectorAll('.product_popup_overlay').forEach(function (overlay) {
-      overlay.addEventListener('click', closePopup);
-    });
-
-    function closePopup() {
-      var popup = this.closest('.product_popup');
-
-      if (!popup) return;
-
-      popup.classList.remove('is-open');
-      popup.setAttribute('aria-hidden', 'true');
-
-      document.body.classList.remove('quick-view-open');
-    }
-
-    /* =========================================
-     ESC KEY
-  ========================================= */
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape') {
-        document.querySelectorAll('.product_popup.is-open').forEach(function (popup) {
-          popup.classList.remove('is-open');
-          popup.setAttribute('aria-hidden', 'true');
-        });
+        popup.classList.remove('is-open');
+        popup.setAttribute('aria-hidden', 'true');
 
         document.body.classList.remove('quick-view-open');
       }
-    });
 
-    /* =========================================
-     PRODUCT OPTIONS
-  ========================================= */
+      /* =========================================
+       ESC KEY
+    ========================================= */
 
-    document.querySelectorAll('.product_popup').forEach(function (popup) {
-      var productData = null;
-
-      var productForm = popup.querySelector('.popup_product_form');
-
-      if (!productForm) return;
-
-      var variantInput = popup.querySelector('.popup_variant_id');
-
-      var addButton = popup.querySelector('.popup_add_to_cart');
-
-      var addButtonText = popup.querySelector('.popup_add_to_cart_text');
-
-      var priceElement = popup.querySelector('.popup_product_price');
-
-      /*
-       * Get product JSON from the Shopify product
-       */
-
-      var productHandle = productForm.getAttribute('action');
-
-      if (!productHandle) return;
-    });
-
-    /* =========================================
-     OPTION SELECTION
-  ========================================= */
-
-    document.querySelectorAll('.popup_product_content').forEach(function (content) {
-      var form = content.querySelector('.popup_product_form');
-
-      if (!form) return;
-
-      var variantInput = form.querySelector('.popup_variant_id');
-
-      var buttons = content.querySelectorAll('.popup_option_button');
-
-      var selects = content.querySelectorAll('.popup_option_select');
-
-      /*
-       * Get the product ID from the popup's parent
-       */
-
-      var popup = content.closest('.product_popup');
-
-      if (!popup) return;
-
-      var productId = popup.getAttribute('data-product-id');
-
-      /*
-       * Shopify product data is embedded below.
-       */
-
-      var productDataElement = popup.querySelector('.popup-product-json');
-
-      if (!productDataElement) return;
-
-      try {
-        var productData = JSON.parse(productDataElement.textContent);
-
-        function getSelectedOptions() {
-          var selectedOptions = [];
-
-          content.querySelectorAll('.popup_product_option').forEach(function (optionContainer) {
-            var index = parseInt(optionContainer.getAttribute('data-option-index'));
-
-            var button = optionContainer.querySelector('.popup_option_button.is-selected');
-
-            var select = optionContainer.querySelector('.popup_option_select');
-
-            if (button) {
-              selectedOptions[index] = button.getAttribute('data-option-value');
-            } else if (select) {
-              selectedOptions[index] = select.value;
-            }
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          document.querySelectorAll('.product_popup.is-open').forEach(function (popup) {
+            popup.classList.remove('is-open');
+            popup.setAttribute('aria-hidden', 'true');
           });
 
-          return selectedOptions;
+          document.body.classList.remove('quick-view-open');
         }
+      });
 
-        function updateVariant() {
-          var selectedOptions = getSelectedOptions();
+      /* =========================================
+       PRODUCT OPTIONS
+    ========================================= */
 
-          var variant = productData.variants.find(function (variant) {
-            return variant.options.every(function (optionValue, index) {
-              return optionValue === selectedOptions[index];
+      document.querySelectorAll('.product_popup').forEach(function (popup) {
+        var productData = null;
+
+        var productForm = popup.querySelector('.popup_product_form');
+
+        if (!productForm) return;
+
+        var variantInput = popup.querySelector('.popup_variant_id');
+
+        var addButton = popup.querySelector('.popup_add_to_cart');
+
+        var addButtonText = popup.querySelector('.popup_add_to_cart_text');
+
+        var priceElement = popup.querySelector('.popup_product_price');
+
+        /*
+         * Get product JSON from the Shopify product
+         */
+
+        var productHandle = productForm.getAttribute('action');
+
+        if (!productHandle) return;
+      });
+
+      /* =========================================
+       OPTION SELECTION
+    ========================================= */
+
+      document.querySelectorAll('.popup_product_content').forEach(function (content) {
+        var form = content.querySelector('.popup_product_form');
+
+        if (!form) return;
+
+        var variantInput = form.querySelector('.popup_variant_id');
+
+        var buttons = content.querySelectorAll('.popup_option_button');
+
+        var selects = content.querySelectorAll('.popup_option_select');
+
+        /*
+         * Get the product ID from the popup's parent
+         */
+
+        var popup = content.closest('.product_popup');
+
+        if (!popup) return;
+
+        var productId = popup.getAttribute('data-product-id');
+
+        /*
+         * Shopify product data is embedded below.
+         */
+
+        var productDataElement = popup.querySelector('.popup-product-json');
+
+        if (!productDataElement) return;
+
+        try {
+          var productData = JSON.parse(productDataElement.textContent);
+
+          function getSelectedOptions() {
+            var selectedOptions = [];
+
+            content.querySelectorAll('.popup_product_option').forEach(function (optionContainer) {
+              var index = parseInt(optionContainer.getAttribute('data-option-index'));
+
+              var button = optionContainer.querySelector('.popup_option_button.is-selected');
+
+              var select = optionContainer.querySelector('.popup_option_select');
+
+              if (button) {
+                selectedOptions[index] = button.getAttribute('data-option-value');
+              } else if (select) {
+                selectedOptions[index] = select.value;
+              }
             });
-          });
 
-          if (!variant) {
+            return selectedOptions;
+          }
+
+          function updateVariant() {
+            var selectedOptions = getSelectedOptions();
+
+            var variant = productData.variants.find(function (variant) {
+              return variant.options.every(function (optionValue, index) {
+                return optionValue === selectedOptions[index];
+              });
+            });
+
+            if (!variant) {
+              if (variantInput) {
+                variantInput.value = '';
+              }
+
+              if (addButton) {
+                addButton.disabled = true;
+              }
+
+              if (addButtonText) {
+                addButtonText.textContent = 'UNAVAILABLE';
+              }
+
+              return;
+            }
+
             if (variantInput) {
-              variantInput.value = '';
+              variantInput.value = variant.id;
+            }
+
+            if (priceElement) {
+              priceElement.innerHTML = Shopify.formatMoney(variant.price, Shopify.money_format);
             }
 
             if (addButton) {
-              addButton.disabled = true;
+              addButton.disabled = !variant.available;
             }
 
             if (addButtonText) {
-              addButtonText.textContent = 'UNAVAILABLE';
+              addButtonText.textContent = variant.available ? 'ADD TO CART' : 'SOLD OUT';
             }
-
-            return;
           }
 
-          if (variantInput) {
-            variantInput.value = variant.id;
-          }
+          /* =========================================
+   * ADD TO CART
+   * ========================================= */
 
-          if (priceElement) {
-            priceElement.innerHTML = Shopify.formatMoney(variant.price, Shopify.money_format);
-          }
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
 
-          if (addButton) {
-            addButton.disabled = !variant.available;
-          }
+    var selectedVariantId = variantInput ? variantInput.value : '';
 
-          if (addButtonText) {
-            addButtonText.textContent = variant.available ? 'ADD TO CART' : 'SOLD OUT';
-          }
+    if (!selectedVariantId) {
+      console.error('No variant selected.');
+      return;
+    }
+
+    var selectedOptions = getSelectedOptions();
+
+    /*
+     * Check whether the selected variant contains
+     * both M and Black.
+     */
+    var hasSizeM = selectedOptions.some(function (value) {
+      return value && value.trim().toLowerCase() === 'm';
+    });
+
+    var hasBlack = selectedOptions.some(function (value) {
+      return value && value.trim().toLowerCase() === 'black';
+    });
+
+    var items = [
+      {
+        id: Number(selectedVariantId),
+        quantity: 1
+      }
+    ];
+
+    /*
+     * If M + Black are selected,
+     * also add the auto-added product.
+     */
+    if (hasSizeM && hasBlack && {{ auto_added_product | default: 0 }}) {
+      items.push({
+        id: Number({{ auto_added_product | default: 0 }}),
+        quantity: 1
+      });
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        items: items
+      })
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          return response.json().then(function (error) {
+            throw error;
+          });
         }
 
-        /* Option buttons */
+        return response.json();
+      })
+      .then(function (data) {
+        console.log('Products added to cart:', data);
 
-        buttons.forEach(function (button) {
-          button.addEventListener('click', function () {
-            var index = this.getAttribute('data-option-index');
+        /*
+         * Close popup after successful add.
+         */
+        var popup = content.closest('.product_popup');
 
-            content
-              .querySelectorAll('.popup_option_button[data-option-index="' + index + '"]')
-              .forEach(function (item) {
-                item.classList.remove('is-selected');
-              });
+        if (popup) {
+          popup.classList.remove('is-open');
+          popup.setAttribute('aria-hidden', 'true');
+        }
 
-            this.classList.add('is-selected');
+        document.body.classList.remove('quick-view-open');
 
-            updateVariant();
-          });
-        });
+        /*
+         * Refresh the cart drawer/cart if available.
+         */
+        document.dispatchEvent(new CustomEvent('cart:refresh'));
 
-        /* Select options */
-
-        selects.forEach(function (select) {
-          select.addEventListener('change', updateVariant);
-        });
-
-        updateVariant();
-      } catch (error) {
-        console.error('Quick View product data error:', error);
-      }
-    });
+        /*
+         * Optional Shopify cart drawer events.
+         */
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: data
+        }));
+      })
+      .catch(function (error) {
+        console.error('Add to cart error:', error);
+      });
   });
+
+          /* Option buttons */
+
+          buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+              var index = this.getAttribute('data-option-index');
+
+              content
+                .querySelectorAll('.popup_option_button[data-option-index="' + index + '"]')
+                .forEach(function (item) {
+                  item.classList.remove('is-selected');
+                });
+
+              this.classList.add('is-selected');
+
+              updateVariant();
+            });
+          });
+
+          /* Select options */
+
+          selects.forEach(function (select) {
+            select.addEventListener('change', updateVariant);
+          });
+
+          updateVariant();
+        } catch (error) {
+          console.error('Quick View product data error:', error);
+        }
+      });
+    });
 </script>
