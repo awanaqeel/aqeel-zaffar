@@ -1,0 +1,745 @@
+<style>
+  #shopify-section-{{ section.id }}{
+  {% if section.settings.section_padding_desktop != blank %}
+    .custom-featured-grid {
+      padding: {{ section.settings.section_padding_desktop }};
+    }
+  {% endif %}
+
+  .section_heading h2 {
+    font-family: 'Lustria';
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 120%;
+    letter-spacing: 0;
+    margin: 0 0 30px 0;
+  }
+
+  /* Product Grid */
+  .custom-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+  }
+
+   .custom-banner__button {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.48px;
+    letter-spacing: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    color:#fff;
+    background-color: #000;
+    padding: 12px 39px;
+    max-width: 220px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+  .popup_add_to_cart_text, .popup_add_to_cart_arrow {
+  font-weight: 400;
+    font-size: 16px;
+    line-height: 20.48px;
+    letter-spacing: 0px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .custom-banner__button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF544;
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+
+  .custom-banner__button .popup_add_to_cart_arrow {
+    margin-left: 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .custom-banner__button:hover::before {
+    transform: translateX(0);
+  }
+
+  .custom-banner__button:hover {
+    color: #000;
+  }
+
+  /* Product Grid Item */
+  .custom-product-grid-item {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Product Image */
+  .grid_image {
+    width: 100%;
+    height: 444px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .grid_image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Quick View Button */
+  .quick_view_btn {
+    position: absolute;
+    cursor: pointer;
+
+    /* Desktop Position */
+    top: var(--quick-top);
+    bottom: var(--quick-bottom);
+    left: var(--quick-left);
+    right: var(--quick-right);
+
+    width: 16px;
+    height: 16px;
+
+    background: #F8F8F8E5;
+    border-radius: 50%;
+    box-shadow: 0px 3px 4px 0px #00000033;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 5;
+    box-sizing: border-box;
+  }
+
+  .quick_view_btn img {
+    width: 8px;
+    height: 8px;
+    display: block;
+  }
+
+  /* =========================================
+   QUICK VIEW POPUP
+========================================= */
+
+.product_popup {
+  position: fixed;
+  width: 100%;
+  inset: 0;
+  left: 0%;
+  right: 0%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.product_popup.is-active {
+  display: flex;
+}
+
+
+/* Overlay */
+
+.product_popup_overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+
+/* Popup Card */
+
+.product_popup_card {
+  position: relative;
+  width: min(700px, calc(100% - 40px));
+  max-height: calc(100vh - 40px);
+  background: #ffffff;
+  z-index: 2;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+/* Close Button */
+
+.product_popup_close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 24px;
+  height: 24px;
+
+  padding: 0;
+  border: 0;
+  background: transparent;
+
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 24px;
+
+  cursor: pointer;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* =========================================
+   POPUP CONTENT
+========================================= */
+
+.popup_product_content {
+  width: 100%;
+  background-color: #fff;
+  padding: 25px 20px;
+  position: relative;
+  max-width: 310px;
+}
+.close_popup{
+  width: max-content;
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    cursor:pointer;
+}
+.image_with_info{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+
+/* Product Image */
+
+.popup_product_image {
+  width: 100%;
+  height: 120px;
+}
+
+.popup_product_image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+/* Product Title */
+
+.popup_product_title {
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 120%;
+  letter-spacing: 0px;
+  margin: 0 0 13px 0;
+}
+
+
+/* Price */
+
+.popup_product_price {
+  font-family: 'Lustria';
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 120%;
+  letter-spacing: 0px;
+  margin: 0 0 13px 0;
+  color: #000;
+}
+
+
+/* Description */
+
+.popup_product_description {
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 110%;
+  letter-spacing: -1%;
+  color: #000;
+}
+
+
+/* =========================================
+   OPTIONS
+========================================= */
+
+.popup_product_option {
+  margin-bottom: 14px;
+}
+
+.popup_option_label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+
+/* Option Buttons */
+
+.popup_option_buttons {
+  display: flex;
+  width: 100%;
+}
+
+.popup_option_button {
+  flex: 1;
+
+  height: 40px;
+
+  padding: 0 10px;
+
+  border: 1px solid #999999;
+  background: #ffffff;
+
+  font-size: 16px;
+  font-weight: 400;
+
+  cursor: pointer;
+
+  margin-left: -1px;
+}
+
+.popup_option_button:first-child {
+  margin-left: 0;
+}
+
+.popup_option_button.is-selected {
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Select */
+
+.popup_select_wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.popup_option_select {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+
+  padding: 0 32px 0 10px;
+
+  border: 1px solid #999999;
+  border-radius: 0;
+
+  background: #ffffff;
+
+  font-size: 16px;
+  height: 40px;
+
+  cursor: pointer;
+}
+
+.popup_select_arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px;
+  border-left: 1px solid #000;
+  pointer-events: none;
+}
+
+
+/* =========================================
+   ADD TO CART
+========================================= */
+
+.popup_product_form {
+  width: 100%;
+}
+
+.popup_add_to_cart {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  width: 100%;
+  height: 40px;
+
+  margin-top: 50px;
+
+  padding: 0 16px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: #000000;
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+
+.popup_add_to_cart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popup_add_to_cart_text {
+  {% comment %} position: absolute;
+  left: 50%;
+  transform: translateX(-50%); {% endcomment %}
+  white-space: nowrap;
+}
+
+
+body.quick-view-open {
+  overflow: hidden;
+}
+  /* Mobile */
+  @media only screen and (max-width: 989px) {
+
+    {% if section.settings.section_padding_mobile != blank %}
+      .custom-featured-grid {
+        padding: {{ section.settings.section_padding_mobile }};
+      }
+    {% endif %}
+
+    .section_heading h2 {
+      font-size: 24px;
+      margin: 0 0 20px 0;
+      text-align: center;
+    }
+
+    /* 2 Products Per Row */
+    .custom-product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .custom-product-grid-item {
+      width: 100%;
+    }
+
+    /* Mobile Image */
+    .grid_image {
+      width: 100%;
+      height: 186.42px;
+    }
+
+    .grid_image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Mobile Quick View Position */
+    .quick_view_btn {
+      top: var(--quick-top-mb);
+      bottom: var(--quick-bottom-mb);
+      left: var(--quick-left-mb);
+      right: var(--quick-right-mb);
+    }
+.popup_product_content{
+ max-width: 310px;
+}
+
+    .product_popup {
+    padding: 12px;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+  }
+
+  .product_popup_card {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 24px);
+
+    overflow-y: auto;
+  }
+
+  
+
+  .popup_product_title {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .popup_product_price {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+
+  .popup_product_option {
+    margin-bottom: 12px;
+  }
+
+  .popup_option_label {
+    font-size: 9px;
+    margin-bottom: 5px;
+  }
+
+  .popup_option_button {
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .popup_add_to_cart {
+    margin-top: 22px;
+    padding: 0 10px;
+  }
+
+
+  .product_popup_close {
+    top: 6px;
+    right: 7px;
+
+    width: 18px;
+    height: 18px;
+
+    font-size: 17px;
+  }
+  }
+}
+</style>
+
+
+<div class="page-width custom-featured-grid">
+
+  {% if section.settings.section_heading != blank %}
+    <div class="section_heading">
+      <h2>{{ section.settings.section_heading }}</h2>
+    </div>
+  {% endif %}
+
+
+    <div class="custom-product-grid" data-money-format="{{ shop.money_format | json }}">
+
+    {% for block in section.blocks %}
+
+      {% if block.settings.product != blank %}
+
+        {% assign product = block.settings.product %}
+
+        <div
+          class="custom-product-grid-item"
+          style="
+            --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
+            --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
+            --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
+            --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
+
+            --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
+            --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
+            --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
+            --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
+          "
+          {{ block.shopify_attributes }}
+        >
+
+          <div class="grid_image">
+            <img
+              src="{{ product.featured_image | img_url: 'master' }}"
+              alt="{{ product.featured_image.alt | escape }}"
+              loading="lazy"
+            >
+          </div>
+
+          <div class="quick_view_btn" id="quick_view_btn_{{ product.id }}" data-product-id="{{  product.id }}">
+            <img
+              src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
+              alt="plus-icon"
+            >
+          </div>
+          <div class="product_popup" id="product-popup-{{  product.id }}" data-product-id="{{  product.id }}">
+            {% render 'popup-card', product: product, section: section %}
+          </div>
+
+        </div>
+
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+
+{% schema %}
+{
+  "name": "Custom Featured Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading"
+    },
+    {
+      "type": "product",
+      "id": "select_product",
+      "label": "Select Product",
+      "info": "Product that is added automatically when Black and Medium is selected."
+    },
+    {
+      "type": "text",
+      "id": "section_padding_desktop",
+      "label": "Section Padding (Desktop)",
+      "info": "Write in this format (top right bottom left)"
+    },
+    {
+      "type": "text",
+      "id": "section_padding_mobile",
+      "label": "Section Padding (Mobile)",
+      "info": "Write in this format (top right bottom left)"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Product",
+      "type": "product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Quick View Icon Position - Desktop"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "Top",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "bottom",
+          "label": "Bottom",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "label": "Left",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "right",
+          "label": "Right",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+
+        {
+          "type": "header",
+          "content": "Quick View Icon Position - Mobile"
+        },
+        {
+          "type": "range",
+          "id": "top_mb",
+          "label": "Top (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "bottom_mb",
+          "label": "Bottom (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "left_mb",
+          "label": "Left (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "right_mb",
+          "label": "Right (Mobile)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 0,
+          "unit": "%"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Featured Grid"
+    }
+  ]
+}
+{% endschema %}

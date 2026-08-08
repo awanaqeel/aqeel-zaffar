@@ -1,0 +1,353 @@
+<div
+  class="custom-banner"
+  style="
+    --desktop-banner-ratio: {{ section.settings.desktop_banner.aspect_ratio | default: 1.8 }};
+    --mobile-banner-ratio: {{ section.settings.mobile_banner.aspect_ratio | default: 0.82 }};
+  "
+>
+  <div class="custom-banner__media">
+    {% if section.settings.desktop_banner != blank %}
+      <picture>
+        {% if section.settings.mobile_banner != blank %}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ section.settings.mobile_banner | image_url: width: 1000 }}"
+          >
+        {% endif %}
+
+        <img
+          src="{{ section.settings.desktop_banner | image_url: width: 2400 }}"
+          alt="{{ section.settings.heading | escape }}"
+          loading="lazy"
+          width="{{ section.settings.desktop_banner.width }}"
+          height="{{ section.settings.desktop_banner.height }}"
+        >
+      </picture>
+
+      {% if section.settings.button_label != blank %}
+        <div class="desktop_hidden">
+          <a
+            href="{{ section.settings.button_link }}"
+            class="custom-banner__button"
+          >
+            {{ section.settings.button_label }}
+
+            <span class="custom-banner__button-arrow">&xrarr;</span>
+          </a>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="custom-banner__content">
+    <div class="custom-banner__text">
+      {% if section.settings.heading != blank %}
+        <h2 class="custom-banner__heading">
+          {{ section.settings.heading }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.content != blank %}
+        <div class="custom-banner__description">
+          {{ section.settings.content }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.button_label != blank %}
+        <a
+          href="{{ section.settings.button_link | default: '#' }}"
+          class="custom-banner__button mobile_hidden"
+        >
+          {{ section.settings.button_label }}
+
+          <span class="custom-banner__button-arrow">&xrarr;</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% if section.settings.footer_content != blank %}
+  <div class="footer_content">
+    {{ section.settings.footer_content }}
+  </div>
+{% endif %}
+<style>
+  #shopify-section-{{ section.id }}{
+    .custom-banner {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      aspect-ratio: var(--desktop-banner-ratio);
+      display: flex;
+      align-items: center;
+    }
+    .footer_content{
+      width: 100%;
+      text-align: center;
+      background: #f5f5f5;
+      color: #000;
+      height: 34px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .footer_content p{
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 13.42px;
+      letter-spacing: 0px;
+      text-align: center;
+      text-transform: uppercase;
+      margin: 0px;
+      color: #000;
+    }
+
+    .custom-banner__media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+  .desktop_hidden{
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-direction: column;
+    }
+    .desktop_hidden .mobile_hidden{
+      display: block;
+    }
+    .custom-banner__media picture,
+    .custom-banner__media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .custom-banner__media img {
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .custom-banner__content {
+      position: absolute;
+      z-index: 2;
+      width: 100%;
+      bottom: 0;
+      max-width: 600px;
+      background: #fff;
+      padding: 50px;
+
+    }
+
+    .custom-banner__heading {
+      font-weight: 500;
+      font-size: 70px;
+      line-height: 100%;
+      letter-spacing: 0px;
+      color: #000;
+      margin-bottom: 50px;
+    }
+
+    .custom-banner__description p{
+      font-size: 20px;
+      line-height: 140%;
+      letter-spacing: 0px;
+      color: #000;
+      margin-bottom: 50px;
+  }
+
+   .custom-banner__button {
+    position: relative;
+    overflow: hidden;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.48px;
+    letter-spacing: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: {{ section.settings.button_text_color }};
+    background-color: {{ section.settings.button_bg_color }};
+    padding: 12px 39px;
+    max-width: 220px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .custom-banner__button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ section.settings.button_bg_hover_color }};
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+
+  .custom-banner__button span {
+    margin-left: 10px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .custom-banner__button:hover::before {
+    transform: translateX(0);
+  }
+
+  .custom-banner__button:hover {
+    color: {{ section.settings.button_hover_text_color }};
+  }
+
+  @media only screen and (max-width: 1200px){
+    .custom-banner__description p{
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    .custom-banner__content {
+      padding: 0 30px 30px 30px;
+    }
+    .custom-banner__heading {
+      font-size: 50px;
+      margin-bottom: 30px;
+    }
+
+  }
+    @media screen and (max-width: 749px) {
+      .custom-banner {
+        align-items: center;
+        flex-direction: column-reverse;
+            aspect-ratio: unset;
+      }
+      .footer_content p{
+      font-size: 14px;
+    }
+
+        .mobile_hidden{
+      display: none;
+    }
+    .desktop_hidden {
+      display: flex;
+      position: absolute;
+        bottom: 10%;
+        left: 0;
+        right: 0;
+    }
+      .custom-banner__content {
+        height: 100%;
+        text-align: center;
+        padding-top: 18px;
+      }
+      .custom-banner__media,  .custom-banner__content{
+        position: unset;
+      }
+
+       .custom-banner__media{
+        position: relative;
+      }
+      .custom-banner__text {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .custom-banner__heading {
+        margin:0 0 24px 0;
+        font-size: 30px;
+        line-height: 1.2;
+        font-weight: 500;
+      }
+
+      .custom-banner__description {
+        font-size: 16px;
+        margin:0;
+      }
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Custom banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "desktop_banner",
+      "label": "Desktop Banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_banner",
+      "label": "Mobile Banner"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Content",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gift.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Bg Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_hover_color",
+      "label": "Button BG Hover Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button BG Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "richtext",
+      "id": "footer_content",
+      "label": "Footer Content"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom banner"
+    }
+  ]
+}
+{% endschema %}

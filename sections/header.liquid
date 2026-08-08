@@ -16,6 +16,100 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{% if section.settings.enabled_custom_design  %}
+{% comment %} my custom style for header starts here {% endcomment %}
+<style>
+  .header_text {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 13.42px;
+    letter-spacing: 0px;
+    text-align: center;
+    color: #000;
+  }
+  .header--middle-left{
+    grid-template-columns: auto 1fr auto;
+  }
+  .custom_btn_header {
+  position: relative;
+  overflow: hidden;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20.48px;
+  letter-spacing: 0px;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: {{ section.settings.button_text_color }};
+  background-color: {{ section.settings.button_bg_color }};
+  padding: 12px 39px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.custom_btn_header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: {{ section.settings.button_bg_hover_color }};
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+.custom_btn_header span {
+  margin-left: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.custom_btn_header:hover::before {
+  transform: translateX(0);
+}
+
+.custom_btn_header:hover {
+  color: {{ section.settings.button_hover_text_color }};
+}
+.menu-drawer{
+  width: 100vw;
+}
+.desktop_hidden{
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-direction: column;
+  }
+  .desktop_hidden .mobile_hidden{
+    display: block;
+  }
+@media only screen and (max-width: 989px){
+  .mobile_hidden{
+    display: none;
+  }
+  .header-wrapper {
+    background: #f7f7f7;
+  }
+  #menu-drawer{
+    height: 150px;
+    background-color: #f2f2f2;
+  }
+  .custom_btn_header{
+    max-width:244px;
+  }
+  .desktop_hidden {
+    display: flex;
+  }
+}
+</style>
+{% comment %} my custom style for header ends here {% endcomment %}
+{% endif %}
 <style>
   header-drawer {
     justify-self: start;
@@ -139,7 +233,7 @@
   <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if localization_forms %} header--has-localizations{% endif %}">
     {%- liquid
       if section.settings.menu != blank
-        render 'header-drawer'
+        render 'header-drawer', section: section
       endif
 
       if section.settings.logo_position == 'top-center' or section.settings.menu == blank
@@ -183,7 +277,7 @@
     {%- liquid
       if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu'
+          render 'header-dropdown-menu', section: section
         elsif section.settings.menu_type_desktop != 'drawer'
           render 'header-mega-menu'
         endif
@@ -223,6 +317,12 @@
       {%- endif -%}
     {%- endif -%}
 
+    
+{% if section.settings.enabled_custom_design  %}
+  {%  if section.settings.button_label != blank and section.settings.button_link != blank %}
+    <a href="{{section.settings.button_link }}" class="custom_btn_header mobile_hidden">{{section.settings.button_label}}<span>&xrarr;</span> </a>
+  {% endif %}
+{% else %}
     <div class="header__icons{% if section.settings.enable_country_selector or section.settings.enable_language_selector %} header__icons--localization header-localization{% endif %}">
       <div class="desktop-localization-wrapper">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
@@ -302,6 +402,7 @@
         {%- endif -%}
       </a>
     </div>
+  {% endif %}
   </header>
 </{{ header_tag }}>
 
@@ -624,6 +725,52 @@
       "label": "t:sections.header.settings.margin_bottom.label",
       "default": 0
     },
+    {
+      "type": "header",
+      "content": "Custom Design"
+    },
+    {
+      "type": "checkbox",
+      "id": "enabled_custom_design",
+      "label": "Enabled Custom Design",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "custom_text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Bg Color"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_hover_color",
+      "label": "Button BG Hover Color"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button BG Text Color"
+    },
+
     {
       "type": "header",
       "content": "t:sections.all.padding.section_padding_heading"

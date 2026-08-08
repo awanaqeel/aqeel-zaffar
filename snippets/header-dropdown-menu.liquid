@@ -4,8 +4,15 @@
   Usage:
   {% render 'header-dropdown-menu' %}
 {% endcomment %}
+{% if section.settings.enabled_custom_design  %}
+  {% if section.settings.custom_text != blank %}
+   <div class="header_text mobile_hidden">
+    {{ section.settings.custom_text }}
+   </div>
+  {% endif %}
 
-<nav class="header__inline-menu">
+  {% else %}
+    <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
       <li>
@@ -101,3 +108,5 @@
     {%- endfor -%}
   </ul>
 </nav>
+
+  {% endif %}

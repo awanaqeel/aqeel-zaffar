@@ -1,0 +1,144 @@
+{% assign auto_added_product = section.settings.select_product.selected_or_first_available_variant.id %}
+
+<script type="application/json" id="variants-json-{{ product.id }}">
+  {{ product.variants | json }}
+</script>
+
+<div class="popup_product_content" data-auto-variant-id="{{ auto_added_product }}">
+  <div class="product_popup_close" id="close-popup-{{ product.id }}">
+    <img
+      src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
+      alt="close_icon"
+    >
+  </div>
+
+  <div class="image_with_info">
+    <div class="popup_product_image">
+      {% if product.featured_image %}
+        <img
+          src="{{ product.featured_image | image_url: width: 800 }}"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="lazy"
+        >
+      {% endif %}
+    </div>
+
+    <div class="popup_product_info">
+      <h3 class="popup_product_title">
+        {{ product.title }}
+      </h3>
+
+      <div class="popup_product_price">
+        {{ product.selected_or_first_available_variant.price | money }}
+      </div>
+
+      {% if product.description != blank %}
+        <div class="popup_product_description">
+          {{ product.description | strip_html | truncatewords: 30 }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- No <form> tag at all now — plain div, no native submission possible -->
+  <div class="popup_product_form">
+
+    {% unless product.has_only_default_variant %}
+
+      <div class="popup_product_options">
+
+        <!-- Pass 1: Color option, rendered first, as buttons -->
+        {% for option in product.options_with_values %}
+          {% if option.name == 'Color' or option.name == 'Colour' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
+              <div class="popup_option_buttons">
+                {% for value in option.values %}
+                  <button
+                    type="button"
+                    class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}{% if value == 'White' %} has-shadow-border{% endif %}"
+                    {%  if value == 'white' %}
+                    style="border-left: 4px solid #f7f7f7;"
+                    {% else %}
+                    style="border-left: 4px solid {{ value | handle }};"
+                    {% endif %}
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ option_index }}"
+                  >
+                    {{ value }}
+                  </button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Pass 2: Size option, rendered second, as a dropdown -->
+        {% for option in product.options_with_values %}
+          {% if option.name == 'Size' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
+              <div class="popup_select_wrapper">
+                <select class="popup_option_select" data-option-index="{{ option_index }}">
+                  <option value="" disabled selected>Choose your size</option>
+                  {% for value in option.values %}
+                    <option value="{{ value | escape }}">{{ value }}</option>
+                  {% endfor %}
+                </select>
+                <span class="popup_select_arrow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 9L12 16L19 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Pass 3: any other options, rendered last, as buttons -->
+        {% for option in product.options_with_values %}
+          {% unless option.name == 'Color' or option.name == 'Colour' or option.name == 'Size' %}
+            {% assign option_index = option.position | minus: 1 %}
+            <div class="popup_product_option" data-option-index="{{ option_index }}">
+              <label class="popup_option_label">{{ option.name }}</label>
+              <div class="popup_option_buttons">
+                {% for value in option.values %}
+                  <button
+                    type="button"
+                    class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}"
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ option_index }}"
+                  >
+                    {{ value }}
+                  </button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endunless %}
+        {% endfor %}
+
+      </div>
+    {% endunless %}
+
+    <!-- type="button" — never "submit", since there's no form to submit -->
+    <button
+      type="button"
+      class="popup_add_to_cart custom-banner__button"
+      {% unless product.selected_or_first_available_variant.available %}
+        disabled
+      {% endunless %}
+    >
+      <span class="popup_add_to_cart_text">
+        {% if product.selected_or_first_available_variant.available %}
+          ADD TO CART
+          
+        {% else %}
+          SOLD OUT
+        {% endif %}
+      </span>
+      <span class="popup_add_to_cart_arrow"> &xrarr; </span>
+    </button>
+
+  </div>
+
+</div>
