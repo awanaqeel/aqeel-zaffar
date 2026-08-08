@@ -245,6 +245,7 @@
       .then(function () {
         document.dispatchEvent(new CustomEvent('cart:updated'));
         closePopup(self.popup);
+        window.location.href = "/cart";
       })
       .catch(function (err) {
         console.error(err);
