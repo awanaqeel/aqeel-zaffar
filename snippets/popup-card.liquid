@@ -1,6 +1,10 @@
 {% assign auto_added_product = section.settings.select_product.selected_or_first_available_variant.id %}
 
-<div class="popup_product_content">
+<script type="application/json" id="variants-json-{{ product.id }}">
+  {{ product.variants | json }}
+</script>
+
+<div class="popup_product_content" data-auto-variant-id="{{ auto_added_product }}">
   <div class="product_popup_close" id="close-popup-{{ product.id }}">
     <img
       src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
@@ -40,9 +44,34 @@
   <div class="popup_product_form">
 
     {% unless product.has_only_default_variant %}
+
+      {% assign color_option = nil %}
+      {% assign size_option = nil %}
+      {% assign other_options = '' | split: ',' %}
+
+      {% for option in product.options_with_values %}
+        {% case option.name %}
+          {% when 'Color', 'Colour' %}
+            {% assign color_option = option %}
+          {% when 'Size' %}
+            {% assign size_option = option %}
+          {% else %}
+            {% assign other_options = other_options | concat: option %}
+        {% endcase %}
+      {% endfor %}
+
+      {% assign ordered_options = '' | split: ',' %}
+      {% if color_option %}
+        {% assign ordered_options = ordered_options | concat: color_option %}
+      {% endif %}
+      {% if size_option %}
+        {% assign ordered_options = ordered_options | concat: size_option %}
+      {% endif %}
+      {% assign ordered_options = ordered_options | concat: other_options %}
+
       <div class="popup_product_options">
 
-        {% for option in product.options_with_values %}
+        {% for option in ordered_options %}
 
           <div
             class="popup_product_option"
@@ -53,7 +82,7 @@
               {{ option.name }}
             </label>
 
-            {% if forloop.first %}
+            {% if option.name == 'Size' %}
 
               <div class="popup_select_wrapper">
                 <select
@@ -81,10 +110,10 @@
 
                   <button
                     type="button"
-                    class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
-                    style="border-left: 4px solid {{ value }}"
+                    class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}{% if value == 'White' %} has-shadow-border{% endif %}"
+                    style="border-left: 4px solid {{ value | handle }};"
                     data-option-value="{{ value | escape }}"
-                    data-option-index="{{ forloop.parentloop.index0 }}"
+                    data-option-index="{{ forloop.index0 }}"
                   >
                     {{ value }}
                   </button>
@@ -123,5 +152,3 @@
   </div>
 
 </div>
-
-
