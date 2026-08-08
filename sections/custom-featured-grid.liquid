@@ -1,556 +1,3 @@
-<style>
-  #shopify-section-{{ section.id }}{
-  {% if section.settings.section_padding_desktop != blank %}
-    .custom-featured-grid {
-      padding: {{ section.settings.section_padding_desktop }};
-    }
-  {% endif %}
-
-  .section_heading h2 {
-    font-family: 'Lustria';
-    font-weight: 400;
-    font-size: 36px;
-    line-height: 120%;
-    letter-spacing: 0;
-    margin: 0 0 30px 0;
-  }
-
-  /* Product Grid */
-  .custom-product-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    width: 100%;
-  }
-
-   .custom-banner__button {
-    width: 100%;
-    max-width: 100%;
-    position: relative;
-    overflow: hidden;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 20.48px;
-    letter-spacing: 0px;
-    text-align: center;
-    text-transform: uppercase;
-    text-decoration: none;
-    color:#fff;
-    background-color: #000;
-    padding: 12px 39px;
-    max-width: 220px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  }
-  .popup_add_to_cart_text, .popup_add_to_cart_arrow {
-  font-weight: 400;
-    font-size: 16px;
-    line-height: 20.48px;
-    letter-spacing: 0px;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  .custom-banner__button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF544;
-    transform: translateX(-100%);
-    transition: transform 0.4s ease;
-    z-index: -1;
-  }
-
-  .custom-banner__button .popup_add_to_cart_arrow {
-    margin-left: 10px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .custom-banner__button:hover::before {
-    transform: translateX(0);
-  }
-
-  .custom-banner__button:hover {
-    color: #000;
-  }
-
-  /* Product Grid Item */
-  .custom-product-grid-item {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-  }
-
-  /* Product Image */
-  .grid_image {
-    width: 100%;
-    height: 444px;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .grid_image img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Quick View Button */
-  .quick_view_btn {
-    position: absolute;
-
-    /* Desktop Position */
-    top: var(--quick-top);
-    bottom: var(--quick-bottom);
-    left: var(--quick-left);
-    right: var(--quick-right);
-
-    width: 16px;
-    height: 16px;
-
-    background: #F8F8F8E5;
-    border-radius: 50%;
-    box-shadow: 0px 3px 4px 0px #00000033;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    z-index: 5;
-    box-sizing: border-box;
-  }
-
-  .quick_view_btn img {
-    width: 8px;
-    height: 8px;
-    display: block;
-  }
-
-  /* =========================================
-   QUICK VIEW POPUP
-========================================= */
-
-.product_popup {
-  position: fixed;
-  width: 100%;
-  inset: 0;
-  left: 0%;
-  right: 0%;
-  height: 100%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-}
-
-.product_popup.is-open {
-  display: flex;
-}
-
-
-/* Overlay */
-
-.product_popup_overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.35);
-}
-
-
-/* Popup Card */
-
-.product_popup_card {
-  position: relative;
-  width: min(700px, calc(100% - 40px));
-  max-height: calc(100vh - 40px);
-  background: #ffffff;
-  z-index: 2;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-
-/* Close Button */
-
-.product_popup_close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  width: 24px;
-  height: 24px;
-
-  padding: 0;
-  border: 0;
-  background: transparent;
-
-  font-size: 22px;
-  font-weight: 300;
-  line-height: 24px;
-
-  cursor: pointer;
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* =========================================
-   POPUP CONTENT
-========================================= */
-
-.popup_product_content {
-  width: 100%;
-  background-color: #fff;
-  padding: 25px 20px;
-  position: relative;
-  max-width: 310px;
-}
-.close_popup{
-  width: max-content;
-    position: absolute;
-    top: 2%;
-    right: 2%;
-    cursor:pointer;
-}
-.image_with_info{
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  gap: 8px;
-}
-
-
-/* Product Image */
-
-.popup_product_image {
-  width: 100%;
-  height: 120px;
-}
-
-.popup_product_image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
-
-/* Product Title */
-
-.popup_product_title {
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 120%;
-  letter-spacing: 0px;
-  margin: 0 0 13px 0;
-}
-
-
-/* Price */
-
-.popup_product_price {
-  font-family: 'Lustria';
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 120%;
-  letter-spacing: 0px;
-  margin: 0 0 13px 0;
-  color: #000;
-}
-
-
-/* Description */
-
-.popup_product_description {
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 110%;
-  letter-spacing: -1%;
-  color: #000;
-}
-
-
-/* =========================================
-   OPTIONS
-========================================= */
-
-.popup_product_option {
-  margin-bottom: 14px;
-}
-
-.popup_option_label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  font-size: 11px;
-  line-height: 1.2;
-}
-
-
-/* Option Buttons */
-
-.popup_option_buttons {
-  display: flex;
-  width: 100%;
-}
-
-.popup_option_button {
-  flex: 1;
-
-  height: 40px;
-
-  padding: 0 10px;
-
-  border: 1px solid #999999;
-  background: #ffffff;
-
-  font-size: 16px;
-  font-weight: 400;
-
-  cursor: pointer;
-
-  margin-left: -1px;
-}
-
-.popup_option_button:first-child {
-  margin-left: 0;
-}
-
-.popup_option_button.is-selected {
-  border: 1px solid #000000;
-  background: #ffffff;
-  color: #000000;
-
-  position: relative;
-  z-index: 1;
-}
-
-
-/* Select */
-
-.popup_select_wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.popup_option_select {
-  appearance: none;
-  -webkit-appearance: none;
-
-  width: 100%;
-
-  padding: 0 32px 0 10px;
-
-  border: 1px solid #999999;
-  border-radius: 0;
-
-  background: #ffffff;
-
-  font-size: 16px;
-  height: 40px;
-
-  cursor: pointer;
-}
-
-.popup_select_arrow {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  font-size: 14px;
-  line-height: 1;
-
-  pointer-events: none;
-}
-
-
-/* =========================================
-   ADD TO CART
-========================================= */
-
-.popup_product_form {
-  width: 100%;
-}
-
-.popup_add_to_cart {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 100%;
-  width: 100%;
-  height: 40px;
-
-  margin-top: 50px;
-
-  padding: 0 16px;
-
-  border: 0;
-  border-radius: 0;
-
-  background: #000000;
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 400;
-
-  cursor: pointer;
-}
-
-
-.popup_add_to_cart:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.popup_add_to_cart_text {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-
-body.quick-view-open {
-  overflow: hidden;
-}
-  /* Mobile */
-  @media only screen and (max-width: 989px) {
-
-    {% if section.settings.section_padding_mobile != blank %}
-      .custom-featured-grid {
-        padding: {{ section.settings.section_padding_mobile }};
-      }
-    {% endif %}
-
-    .section_heading h2 {
-      font-size: 24px;
-      margin: 0 0 20px 0;
-      text-align: center;
-    }
-
-    /* 2 Products Per Row */
-    .custom-product-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .custom-product-grid-item {
-      width: 100%;
-    }
-
-    /* Mobile Image */
-    .grid_image {
-      width: 100%;
-      height: 186.42px;
-    }
-
-    .grid_image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Mobile Quick View Position */
-    .quick_view_btn {
-      top: var(--quick-top-mb);
-      bottom: var(--quick-bottom-mb);
-      left: var(--quick-left-mb);
-      right: var(--quick-right-mb);
-    }
-.popup_product_content{
- max-width: 310px;
-}
-
-    .product_popup {
-    padding: 12px;
-    max-width: 100%;
-    left: 0;
-    right: 0;
-    box-sizing: border-box;
-  }
-
-  .product_popup_card {
-    width: 100%;
-    max-width: 100%;
-    max-height: calc(100vh - 24px);
-
-    overflow-y: auto;
-  }
-
-  
-
-  .popup_product_title {
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .popup_product_price {
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-
-  .popup_product_description {
-    font-size: 8px;
-    line-height: 1.3;
-    margin-bottom: 16px;
-  }
-
-  .popup_product_option {
-    margin-bottom: 12px;
-  }
-
-  .popup_option_label {
-    font-size: 9px;
-    margin-bottom: 5px;
-  }
-
-  .popup_option_button {
-    height: 40px;
-    font-size: 16px;
-  }
-
-  .popup_add_to_cart {
-    margin-top: 22px;
-    padding: 0 10px;
-  }
-
-
-  .product_popup_close {
-    top: 6px;
-    right: 7px;
-
-    width: 18px;
-    height: 18px;
-
-    font-size: 17px;
-  }
-  }
-}
-</style>
-
-
 {% if section.settings.section_heading != blank %}
   <div class="custom-featured-grid-heading">
     {{ section.settings.section_heading }}
@@ -558,95 +5,475 @@ body.quick-view-open {
 {% endif %}
 
 <div
+  class="custom-featured-grid-section"
   id="custom-featured-grid-{{ section.id }}"
-  class="custom-featured-grid"
+  style="
+    --section-padding-desktop: {{ section.settings.section_padding_desktop | default: '0' }};
+    --section-padding-mobile: {{ section.settings.section_padding_mobile | default: '0' }};
+  "
 >
-  {% for block in section.blocks %}
 
-    {% if block.settings.product != blank %}
+  <div class="custom-featured-grid">
 
-      {% assign product = block.settings.product %}
+    {% for block in section.blocks %}
 
-      <div
-        class="custom-product-grid-item"
-        style="
-          --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
-          --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
-          --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
-          --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
+      {% if block.settings.product != blank %}
 
-          --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
-          --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
-          --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
-          --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
-        "
-        {{ block.shopify_attributes }}
-      >
+        {% assign product = block.settings.product %}
 
-        <!-- PRODUCT IMAGE -->
-        <div class="grid_image">
-          {% if product.featured_image != blank %}
-            <img
-              src="{{ product.featured_image | image_url: width: 1200 }}"
-              alt="{{ product.featured_image.alt | default: product.title | escape }}"
-              loading="lazy"
-              width="{{ product.featured_image.width }}"
-              height="{{ product.featured_image.height }}"
-            >
-          {% endif %}
-        </div>
-
-
-        <!-- QUICK VIEW BUTTON -->
-        <button
-          type="button"
-          class="quick_view_btn"
-          id="quick_view_btn_{{ product.id }}_{{ section.id }}"
-          data-product-id="{{ product.id }}"
-          data-popup-id="product-popup-{{ product.id }}-{{ section.id }}"
-          aria-label="Quick view {{ product.title | escape }}"
-        >
-          <img
-            src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
-            alt="plus-icon"
-          >
-        </button>
-
-
-        <!-- PRODUCT POPUP -->
         <div
-          class="product_popup"
-          id="product-popup-{{ product.id }}-{{ section.id }}"
-          data-product-id="{{ product.id }}"
-          aria-hidden="true"
+          class="custom-product-grid-item"
+          style="
+            --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
+            --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
+            --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
+            --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
+
+            --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
+            --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
+            --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
+            --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
+          "
+          {{ block.shopify_attributes }}
         >
 
-          <div class="product_popup_inner">
+          <div class="grid_image">
+            {% if product.featured_image != blank %}
+              <img
+                src="{{ product.featured_image | image_url: width: 1600 }}"
+                alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                loading="lazy"
+                width="{{ product.featured_image.width }}"
+                height="{{ product.featured_image.height }}"
+              >
+            {% endif %}
+          </div>
 
-            <!-- CLOSE BUTTON -->
-            <button
-              type="button"
-              class="product_popup_close"
-              aria-label="Close popup"
+          <button
+            type="button"
+            class="quick_view_btn"
+            id="quick_view_btn_{{ product.id }}"
+            data-product-id="{{ product.id }}"
+            aria-label="Quick view {{ product.title | escape }}"
+            aria-controls="product-popup-{{ product.id }}"
+            aria-expanded="false"
+          >
+            <img
+              src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
+              alt=""
+              width="24"
+              height="24"
             >
-              ×
-            </button>
+          </button>
 
-            {% render 'popup-card',
-              product: product,
-              section: section
-            %}
+          <div
+            class="product_popup"
+            id="product-popup-{{ product.id }}"
+            data-product-id="{{ product.id }}"
+            aria-hidden="true"
+          >
+
+            <div class="popup_overlay" data-popup-close></div>
+
+            <div
+              class="popup_inner"
+              role="dialog"
+              aria-modal="true"
+              aria-label="{{ product.title | escape }}"
+            >
+
+              <button
+                type="button"
+                class="popup_close"
+                data-popup-close
+                aria-label="Close"
+              >
+                &times;
+              </button>
+
+              <div class="popup_content">
+
+                <div class="popup_product_image">
+                  {% if product.featured_image != blank %}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 1200 }}"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                </div>
+
+                <div class="popup_product_details">
+
+                  {% render 'popup-card',
+                    product: product,
+                    section: section
+                  %}
+
+                </div>
+
+              </div>
+
+            </div>
 
           </div>
 
         </div>
 
-      </div>
+      {% endif %}
 
-    {% endif %}
+    {% endfor %}
 
-  {% endfor %}
+  </div>
+
 </div>
+
+
+<style>
+  #custom-featured-grid-{{ section.id }} {
+    padding: {{ section.settings.section_padding_desktop | default: '0' }};
+  }
+
+  #custom-featured-grid-{{ section.id }} .custom-featured-grid-heading {
+    margin-bottom: 30px;
+  }
+
+  #custom-featured-grid-{{ section.id }} .custom-featured-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  #custom-featured-grid-{{ section.id }} .custom-product-grid-item {
+    position: relative;
+    overflow: visible;
+  }
+
+  #custom-featured-grid-{{ section.id }} .grid_image {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  #custom-featured-grid-{{ section.id }} .grid_image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  /*
+   * QUICK VIEW BUTTON
+   */
+
+  #custom-featured-grid-{{ section.id }} .quick_view_btn {
+    position: absolute;
+
+    top: var(--quick-top);
+    bottom: var(--quick-bottom);
+    left: var(--quick-left);
+    right: var(--quick-right);
+
+    z-index: 5;
+
+    width: 45px;
+    height: 45px;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #custom-featured-grid-{{ section.id }} .quick_view_btn img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /*
+   * POPUP
+   */
+
+  #custom-featured-grid-{{ section.id }} .product_popup {
+    position: fixed;
+    inset: 0;
+
+    z-index: 999999;
+
+    display: none;
+
+    width: 100%;
+    height: 100%;
+
+    align-items: center;
+    justify-content: center;
+  }
+
+  #custom-featured-grid-{{ section.id }} .product_popup.is-open {
+    display: flex;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    cursor: pointer;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_inner {
+    position: relative;
+
+    z-index: 2;
+
+    width: min(900px, calc(100% - 30px));
+    max-height: calc(100vh - 30px);
+
+    overflow-y: auto;
+
+    background: #fff;
+
+    border-radius: 10px;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    animation: customPopupOpen 0.2s ease;
+  }
+
+  @keyframes customPopupOpen {
+    from {
+      opacity: 0;
+      transform: translateY(15px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_close {
+    position: absolute;
+
+    top: 12px;
+    right: 15px;
+
+    z-index: 10;
+
+    width: 35px;
+    height: 35px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    font-size: 30px;
+    line-height: 1;
+
+    cursor: pointer;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+    gap: 35px;
+
+    align-items: center;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_product_image img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    max-height: 550px;
+
+    object-fit: contain;
+  }
+
+  /*
+   * POPUP PRODUCT INFO
+   */
+
+  #custom-featured-grid-{{ section.id }} .popup_product_title {
+    margin: 0 0 12px;
+
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_product_price {
+    margin-bottom: 15px;
+
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_product_description {
+    margin-bottom: 25px;
+
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_product_option {
+    margin-bottom: 20px;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_option_label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_select_wrapper {
+    position: relative;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_option_select {
+    width: 100%;
+
+    min-height: 46px;
+
+    padding: 10px 40px 10px 14px;
+
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    background: #fff;
+
+    appearance: none;
+
+    cursor: pointer;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_select_arrow {
+    position: absolute;
+
+    top: 50%;
+    right: 14px;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_option_buttons {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_option_button {
+    min-width: 50px;
+
+    padding: 10px 15px;
+
+    border-top: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_option_button:hover,
+  #custom-featured-grid-{{ section.id }} .popup_option_button.is-selected {
+    background: #111;
+    color: #fff;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_add_to_cart {
+    width: 100%;
+
+    min-height: 50px;
+
+    margin-top: 10px;
+
+    cursor: pointer;
+  }
+
+  #custom-featured-grid-{{ section.id }} .popup_add_to_cart:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /*
+   * MOBILE
+   */
+
+  @media screen and (max-width: 749px) {
+
+    #custom-featured-grid-{{ section.id }} {
+      padding: {{ section.settings.section_padding_mobile | default: '0' }};
+    }
+
+    #custom-featured-grid-{{ section.id }} .custom-featured-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #custom-featured-grid-{{ section.id }} .quick_view_btn {
+      top: var(--quick-top-mb);
+      bottom: var(--quick-bottom-mb);
+      left: var(--quick-left-mb);
+      right: var(--quick-right-mb);
+    }
+
+    #custom-featured-grid-{{ section.id }} .popup_inner {
+      width: calc(100% - 20px);
+      max-height: calc(100vh - 20px);
+
+      padding: 20px;
+    }
+
+    #custom-featured-grid-{{ section.id }} .popup_content {
+      grid-template-columns: 1fr;
+
+      gap: 20px;
+    }
+
+    #custom-featured-grid-{{ section.id }} .popup_product_image img {
+      max-height: 300px;
+    }
+
+    #custom-featured-grid-{{ section.id }} .popup_product_title {
+      font-size: 22px;
+    }
+
+  }
+
+  @media screen and (max-width: 480px) {
+
+    #custom-featured-grid-{{ section.id }} .custom-featured-grid {
+      grid-template-columns: 1fr;
+    }
+
+  }
+</style>
 
 
 <script>
@@ -654,164 +481,51 @@ body.quick-view-open {
 
   'use strict';
 
-
   /*
-   * ============================================================
-   * POPUP SYSTEM
-   * ============================================================
+   * ------------------------------------------------------------
+   * SECTION POPUP + PRODUCT VARIANT HANDLER
+   * ------------------------------------------------------------
    */
 
-  function initPopupSystem(scope) {
+  const sectionRoot =
+    document.getElementById(
+      'custom-featured-grid-{{ section.id }}'
+    );
 
-    scope = scope || document;
-
-    /*
-     * ------------------------------------------------------------
-     * OPEN POPUP
-     * ------------------------------------------------------------
-     */
-
-    scope.querySelectorAll('.quick_view_btn').forEach(function (button) {
-
-      if (button.dataset.popupOpenInitialized === 'true') {
-        return;
-      }
-
-      button.dataset.popupOpenInitialized = 'true';
+  if (!sectionRoot) {
+    return;
+  }
 
 
-      button.addEventListener('click', function (event) {
+  /*
+   * ------------------------------------------------------------
+   * OPEN / CLOSE POPUP
+   * ------------------------------------------------------------
+   */
 
-        event.preventDefault();
-        event.stopPropagation();
+  function openPopup(popup, button) {
 
+    if (!popup) {
+      return;
+    }
 
-        var popupId = button.getAttribute('data-popup-id');
+    popup.classList.add('is-open');
 
-        if (!popupId) {
-          return;
-        }
+    popup.setAttribute(
+      'aria-hidden',
+      'false'
+    );
 
+    if (button) {
+      button.setAttribute(
+        'aria-expanded',
+        'true'
+      );
+    }
 
-        var popup = document.getElementById(popupId);
-
-        if (!popup) {
-          console.error(
-            'Popup not found:',
-            popupId
-          );
-
-          return;
-        }
-
-
-        /*
-         * Close any other popup first.
-         */
-        document.querySelectorAll('.product_popup').forEach(function (item) {
-
-          if (item !== popup) {
-
-            item.setAttribute(
-              'aria-hidden',
-              'true'
-            );
-
-            item.classList.remove(
-              'active',
-              'is-open',
-              'open'
-            );
-
-          }
-
-        });
-
-
-        /*
-         * Open current popup.
-         */
-        popup.setAttribute(
-          'aria-hidden',
-          'false'
-        );
-
-        popup.classList.add(
-          'active',
-          'is-open',
-          'open'
-        );
-
-
-        /*
-         * Initialize variants for this popup.
-         */
-        initPopupProductForms(popup);
-
-      });
-
-    });
-
-
-    /*
-     * ------------------------------------------------------------
-     * CLOSE BUTTON
-     * ------------------------------------------------------------
-     */
-
-    scope.querySelectorAll('.product_popup_close').forEach(function (button) {
-
-      if (button.dataset.popupCloseInitialized === 'true') {
-        return;
-      }
-
-      button.dataset.popupCloseInitialized = 'true';
-
-
-      button.addEventListener('click', function (event) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-
-        var popup = button.closest('.product_popup');
-
-        if (!popup) {
-          return;
-        }
-
-
-        closePopup(popup);
-
-      });
-
-    });
-
-
-    /*
-     * ------------------------------------------------------------
-     * CLICK OUTSIDE POPUP CONTENT
-     * ------------------------------------------------------------
-     */
-
-    scope.querySelectorAll('.product_popup').forEach(function (popup) {
-
-      if (popup.dataset.popupBackdropInitialized === 'true') {
-        return;
-      }
-
-      popup.dataset.popupBackdropInitialized = 'true';
-
-
-      popup.addEventListener('click', function (event) {
-
-        if (event.target === popup) {
-          closePopup(popup);
-        }
-
-      });
-
-    });
+    document.documentElement.classList.add(
+      'custom-popup-open'
+    );
 
   }
 
@@ -822,104 +536,139 @@ body.quick-view-open {
       return;
     }
 
+    popup.classList.remove('is-open');
 
     popup.setAttribute(
       'aria-hidden',
       'true'
     );
 
+    const productId =
+      popup.dataset.productId;
 
-    popup.classList.remove(
-      'active',
-      'is-open',
-      'open'
+    const button =
+      sectionRoot.querySelector(
+        '.quick_view_btn[data-product-id="' +
+        productId +
+        '"]'
+      );
+
+    if (button) {
+      button.setAttribute(
+        'aria-expanded',
+        'false'
+      );
+    }
+
+    document.documentElement.classList.remove(
+      'custom-popup-open'
     );
 
   }
 
 
   /*
-   * ============================================================
-   * ESC KEY
-   * ============================================================
+   * Open buttons
    */
 
-  function initEscapeKey() {
+  sectionRoot
+    .querySelectorAll('.quick_view_btn')
+    .forEach(function (button) {
 
-    if (window.customFeaturedPopupEscapeInitialized) {
-      return;
-    }
+      button.addEventListener(
+        'click',
+        function (event) {
 
-    window.customFeaturedPopupEscapeInitialized = true;
+          event.preventDefault();
+
+          const productId =
+            button.dataset.productId;
+
+          const popup =
+            sectionRoot.querySelector(
+              '.product_popup[data-product-id="' +
+              productId +
+              '"]'
+            );
+
+          openPopup(
+            popup,
+            button
+          );
+
+        }
+      );
+
+    });
 
 
-    document.addEventListener('keydown', function (event) {
+  /*
+   * Close buttons + overlay
+   */
+
+  sectionRoot
+    .querySelectorAll('[data-popup-close]')
+    .forEach(function (element) {
+
+      element.addEventListener(
+        'click',
+        function () {
+
+          const popup =
+            element.closest('.product_popup');
+
+          closePopup(popup);
+
+        }
+      );
+
+    });
+
+
+  /*
+   * Escape key
+   */
+
+  document.addEventListener(
+    'keydown',
+    function (event) {
 
       if (event.key !== 'Escape') {
         return;
       }
 
+      sectionRoot
+        .querySelectorAll(
+          '.product_popup.is-open'
+        )
+        .forEach(function (popup) {
 
-      document.querySelectorAll(
-        '.product_popup[aria-hidden="false"]'
-      ).forEach(function (popup) {
+          closePopup(popup);
 
-        closePopup(popup);
+        });
 
-      });
-
-    });
-
-  }
+    }
+  );
 
 
   /*
-   * ============================================================
-   * POPUP PRODUCT VARIANTS
-   * ============================================================
+   * ------------------------------------------------------------
+   * PRODUCT VARIANTS
+   * ------------------------------------------------------------
    */
 
-  function initPopupProductForms(scope) {
+  function initPopupVariants() {
 
-    scope = scope || document;
-
-
-    /*
-     * If scope itself is a popup, use it.
-     * Otherwise find all popups inside scope.
-     */
-
-    var popups = [];
-
-    if (
-      scope.classList &&
-      scope.classList.contains('product_popup')
-    ) {
-
-      popups = [scope];
-
-    } else {
-
-      popups = Array.from(
-        scope.querySelectorAll('.product_popup')
+    const forms =
+      sectionRoot.querySelectorAll(
+        '.popup_product_form'
       );
 
-    }
 
-
-    popups.forEach(function (popup) {
-
-      var form =
-        popup.querySelector('.popup_product_form');
-
-
-      if (!form) {
-        return;
-      }
-
+    forms.forEach(function (form) {
 
       /*
-       * Prevent duplicate initialization.
+       * Don't initialize the same form twice.
        */
 
       if (
@@ -929,62 +678,51 @@ body.quick-view-open {
         return;
       }
 
-
       form.dataset.variantHandlerInitialized =
         'true';
 
 
-      /*
-       * ----------------------------------------------------------
-       * ELEMENTS
-       * ----------------------------------------------------------
-       */
-
-      var variantInput =
-        form.querySelector('.popup_variant_id');
+      const popup =
+        form.closest('.product_popup');
 
 
-      var addToCartButton =
-        form.querySelector('.popup_add_to_cart');
+      if (!popup) {
+        return;
+      }
 
 
-      var variantJson =
+      const variantInput =
+        form.querySelector(
+          '.popup_variant_id'
+        );
+
+
+      const addToCartButton =
+        form.querySelector(
+          '.popup_add_to_cart'
+        );
+
+
+      const variantJson =
         popup.querySelector(
           '.popup-product-variants'
         );
 
 
-      if (!variantInput) {
-
+      if (
+        !variantInput ||
+        !variantJson
+      ) {
         console.error(
-          'Popup variant input not found.',
-          popup
+          'Popup variant data is missing.',
+          form
         );
 
         return;
-
       }
 
 
-      if (!variantJson) {
-
-        console.error(
-          'Popup variant JSON not found.',
-          popup
-        );
-
-        return;
-
-      }
-
-
-      /*
-       * ----------------------------------------------------------
-       * READ PRODUCT VARIANTS
-       * ----------------------------------------------------------
-       */
-
-      var variants = [];
+      let variants = [];
 
 
       try {
@@ -1006,79 +744,59 @@ body.quick-view-open {
       }
 
 
-      if (!Array.isArray(variants)) {
-
-        console.error(
-          'Product variants JSON is not an array.',
-          variants
-        );
-
-        return;
-
-      }
-
-
       /*
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        * GET SELECTED OPTIONS
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        */
 
       function getSelectedOptions() {
 
-        var options = [];
+        const options = [];
 
 
         /*
-         * SELECT DROPDOWNS
+         * Select dropdowns
          */
 
-        form.querySelectorAll(
-          '.popup_option_select'
-        ).forEach(function (select) {
+        form
+          .querySelectorAll(
+            '.popup_option_select'
+          )
+          .forEach(function (select) {
 
-          var index =
-            parseInt(
-              select.dataset.optionIndex,
-              10
-            );
-
-
-          if (!isNaN(index)) {
-
-            options[index] =
-              String(select.value);
-
-          }
-
-        });
-
-
-        /*
-         * BUTTON OPTIONS
-         */
-
-        form.querySelectorAll(
-          '.popup_option_button.is-selected'
-        ).forEach(function (button) {
-
-          var index =
-            parseInt(
-              button.dataset.optionIndex,
-              10
-            );
-
-
-          if (!isNaN(index)) {
-
-            options[index] =
-              String(
-                button.dataset.optionValue
+            const index =
+              parseInt(
+                select.dataset.optionIndex,
+                10
               );
 
-          }
+            options[index] =
+              select.value;
 
-        });
+          });
+
+
+        /*
+         * Button options
+         */
+
+        form
+          .querySelectorAll(
+            '.popup_option_button.is-selected'
+          )
+          .forEach(function (button) {
+
+            const index =
+              parseInt(
+                button.dataset.optionIndex,
+                10
+              );
+
+            options[index] =
+              button.dataset.optionValue;
+
+          });
 
 
         return options;
@@ -1087,91 +805,96 @@ body.quick-view-open {
 
 
       /*
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        * FIND EXACT PRODUCT VARIANT
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        */
 
       function findVariant(options) {
 
-        if (!options || !options.length) {
+        if (!Array.isArray(options)) {
           return null;
         }
 
 
-        return variants.find(function (variant) {
+        return variants.find(
+          function (variant) {
 
-          if (!variant.options) {
-            return false;
-          }
-
-
-          if (
-            variant.options.length !==
-            options.length
-          ) {
-            return false;
-          }
-
-
-          return variant.options.every(
-            function (variantValue, index) {
-
-              return (
-                String(variantValue).trim() ===
-                String(options[index]).trim()
-              );
-
+            if (
+              !variant.options ||
+              variant.options.length !==
+              options.length
+            ) {
+              return false;
             }
-          );
 
-        }) || null;
+
+            return variant.options.every(
+              function (
+                value,
+                index
+              ) {
+
+                return (
+                  String(value)
+                    .trim()
+                    .toLowerCase() ===
+
+                  String(
+                    options[index]
+                  )
+                    .trim()
+                    .toLowerCase()
+                );
+
+              }
+            );
+
+          }
+        ) || null;
 
       }
 
 
       /*
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        * UPDATE CURRENT VARIANT
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        */
 
       function updateVariant() {
 
-        var options =
+        const options =
           getSelectedOptions();
 
 
         /*
-         * Do not search until every option
-         * has a selected value.
+         * Don't try to match incomplete
+         * option selections.
          */
 
-        var optionCount =
-          form.querySelectorAll(
-            '.popup_product_option'
-          ).length;
-
-
         if (
-          optionCount &&
-          options.length !== optionCount
+          options.length !==
+          variants[0]?.options?.length ||
+          options.some(
+            function (value) {
+              return value === undefined;
+            }
+          )
         ) {
 
           variantInput.value = '';
-
 
           if (addToCartButton) {
             addToCartButton.disabled = true;
           }
 
-
-          return null;
+          return;
 
         }
 
 
-        var variant =
+        const variant =
           findVariant(options);
 
 
@@ -1179,33 +902,24 @@ body.quick-view-open {
 
           variantInput.value = '';
 
-
           if (addToCartButton) {
 
-            addToCartButton.disabled = true;
+            addToCartButton.disabled =
+              true;
 
-
-            var unavailableText =
+            const text =
               addToCartButton.querySelector(
                 '.popup_add_to_cart_text'
               );
 
-
-            if (unavailableText) {
-              unavailableText.textContent =
+            if (text) {
+              text.textContent =
                 'UNAVAILABLE';
             }
 
           }
 
-
-          console.warn(
-            'No matching variant found:',
-            options
-          );
-
-
-          return null;
+          return;
 
         }
 
@@ -1213,29 +927,25 @@ body.quick-view-open {
         /*
          * THIS IS THE IMPORTANT PART.
          *
-         * The actual selected Shopify variant ID
-         * is written into the hidden input.
+         * Shopify receives the exact selected
+         * variant ID.
          */
 
         variantInput.value =
           variant.id;
 
 
-        /*
-         * Store selected options.
-         */
-
         form.dataset.selectedOptions =
           JSON.stringify(options);
 
 
         /*
-         * Update availability.
+         * Availability
          */
 
         if (addToCartButton) {
 
-          var buttonText =
+          const text =
             addToCartButton.querySelector(
               '.popup_add_to_cart_text'
             );
@@ -1243,23 +953,23 @@ body.quick-view-open {
 
           if (variant.available) {
 
-            addToCartButton.disabled = false;
+            addToCartButton.disabled =
+              false;
 
+            if (text) {
 
-            if (buttonText) {
-
-              buttonText.innerHTML =
+              text.innerHTML =
                 'ADD TO CART <span class="popup_add_to_cart_arrow">&xrarr;</span>';
 
             }
 
           } else {
 
-            addToCartButton.disabled = true;
+            addToCartButton.disabled =
+              true;
 
-
-            if (buttonText) {
-              buttonText.textContent =
+            if (text) {
+              text.textContent =
                 'SOLD OUT';
             }
 
@@ -1269,10 +979,10 @@ body.quick-view-open {
 
 
         /*
-         * Update price if price data exists.
+         * Update price
          */
 
-        var priceElement =
+        const priceElement =
           popup.querySelector(
             '.popup_product_price'
           );
@@ -1280,430 +990,255 @@ body.quick-view-open {
 
         if (
           priceElement &&
-          variant.price_formatted
+          variant.price !== undefined
         ) {
 
           priceElement.innerHTML =
-            variant.price_formatted;
+            Shopify.formatMoney(
+              variant.price,
+              {{ shop.money_format | json }}
+            );
 
         }
 
-
-        /*
-         * Debugging.
-         */
-
-        console.log(
-          '[Popup] Selected variant:',
-          variant.id,
-          variant.options
-        );
-
-
-        return variant;
 
       }
 
 
       /*
-       * ----------------------------------------------------------
-       * SELECT CHANGE
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
+       * DROPDOWN CHANGE
+       * --------------------------------------------------------
        */
 
-      form.querySelectorAll(
-        '.popup_option_select'
-      ).forEach(function (select) {
+      form
+        .querySelectorAll(
+          '.popup_option_select'
+        )
+        .forEach(function (select) {
 
-        select.addEventListener(
-          'change',
-          function () {
+          select.addEventListener(
+            'change',
+            function () {
 
-            updateVariant();
+              updateVariant();
 
-          }
-        );
+            }
+          );
 
-      });
+        });
 
 
       /*
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        * OPTION BUTTONS
-       * ----------------------------------------------------------
+       * --------------------------------------------------------
        */
 
-      form.querySelectorAll(
-        '.popup_option_button'
-      ).forEach(function (button) {
+      form
+        .querySelectorAll(
+          '.popup_option_button'
+        )
+        .forEach(function (button) {
 
-        button.addEventListener(
-          'click',
-          function (event) {
+          button.addEventListener(
+            'click',
+            function (event) {
 
-            event.preventDefault();
-
-
-            var optionIndex =
-              button.dataset.optionIndex;
+              event.preventDefault();
 
 
-            /*
-             * Remove selection only from
-             * the same option group.
-             */
+              const optionIndex =
+                button.dataset.optionIndex;
 
-            form.querySelectorAll(
-              '.popup_option_button[data-option-index="' +
-              optionIndex +
-              '"]'
-            ).forEach(function (otherButton) {
 
-              otherButton.classList.remove(
+              form
+                .querySelectorAll(
+                  '.popup_option_button[data-option-index="' +
+                  optionIndex +
+                  '"]'
+                )
+                .forEach(
+                  function (otherButton) {
+
+                    otherButton.classList.remove(
+                      'is-selected'
+                    );
+
+                  }
+                );
+
+
+              button.classList.add(
                 'is-selected'
               );
 
-            });
+
+              updateVariant();
+
+            }
+          );
+
+        });
+
+
+      /*
+       * --------------------------------------------------------
+       * INITIAL VARIANT
+       * --------------------------------------------------------
+       */
+
+      updateVariant();
+
+
+      /*
+       * --------------------------------------------------------
+       * ADD TO CART
+       * --------------------------------------------------------
+       */
+
+      form.addEventListener(
+        'submit',
+        async function (event) {
+
+          event.preventDefault();
+
+
+          if (
+            form.dataset.submitting ===
+            'true'
+          ) {
+            return;
+          }
+
+
+          const options =
+            getSelectedOptions();
+
+
+          const selectedVariant =
+            findVariant(options);
+
+
+          if (!selectedVariant) {
+
+            alert(
+              'Please select a valid product variant.'
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Always update hidden input immediately
+           * before adding.
+           */
+
+          variantInput.value =
+            selectedVariant.id;
+
+
+          form.dataset.submitting =
+            'true';
+
+
+          if (addToCartButton) {
+            addToCartButton.disabled =
+              true;
+          }
+
+
+          try {
+
+            /*
+             * ------------------------------------------------
+             * MAIN PRODUCT
+             * ------------------------------------------------
+             */
+
+            const cartItems = [
+              {
+                id: Number(
+                  selectedVariant.id
+                ),
+                quantity: 1
+              }
+            ];
 
 
             /*
-             * Select clicked value.
+             * ------------------------------------------------
+             * AUTOMATIC PRODUCT
+             * ------------------------------------------------
              */
 
-            button.classList.add(
-              'is-selected'
-            );
+            const autoProductJson =
+              popup.querySelector(
+                '.popup-auto-product-data'
+              );
 
 
-            updateVariant();
+            if (autoProductJson) {
 
-          }
-        );
-
-      });
+              let autoProduct =
+                null;
 
 
-      /*
-       * ----------------------------------------------------------
-       * AUTOMATIC PRODUCT DATA
-       * ----------------------------------------------------------
-       */
+              try {
 
-      function getAutomaticProduct() {
+                autoProduct =
+                  JSON.parse(
+                    autoProductJson.textContent
+                  );
 
-        var element =
-          popup.querySelector(
-            '.popup-auto-product-data'
-          );
+              } catch (error) {
 
-
-        if (!element) {
-          return null;
-        }
-
-
-        try {
-
-          return JSON.parse(
-            element.textContent
-          );
-
-        } catch (error) {
-
-          console.error(
-            'Unable to parse automatic product data:',
-            error
-          );
-
-
-          return null;
-
-        }
-
-      }
-
-
-      /*
-       * ----------------------------------------------------------
-       * FIND AUTOMATIC PRODUCT VARIANT
-       *
-       * REQUIRED:
-       *
-       * Black + Medium
-       *
-       * This does NOT use:
-       *
-       * selected_or_first_available_variant
-       *
-       * It searches the actual variants.
-       * ----------------------------------------------------------
-       */
-
-      function findAutoVariant(autoProduct) {
-
-        if (
-          !autoProduct ||
-          !Array.isArray(autoProduct.variants)
-        ) {
-
-          return null;
-
-        }
-
-
-        /*
-         * Find a variant containing BOTH:
-         *
-         * Medium
-         * Black
-         */
-
-        var matchingVariant =
-          autoProduct.variants.find(
-            function (variant) {
-
-              if (
-                !variant ||
-                !Array.isArray(variant.options)
-              ) {
-
-                return false;
+                console.error(
+                  'Unable to parse automatic product:',
+                  error
+                );
 
               }
 
 
-              var normalizedValues =
-                variant.options.map(
-                  function (value) {
-
-                    return String(value)
-                      .trim()
-                      .toLowerCase();
-
-                  }
-                );
-
-
-              var hasMedium =
-                normalizedValues.includes(
-                  'medium'
-                );
-
-
-              var hasBlack =
-                normalizedValues.includes(
-                  'black'
-                );
-
-
-              return (
-                hasMedium &&
-                hasBlack
-              );
-
-            }
-          );
-
-
-        if (matchingVariant) {
-
-          console.log(
-            '[Popup] Automatic product variant found:',
-            matchingVariant.id,
-            matchingVariant.options
-          );
-
-        }
-
-
-        return matchingVariant || null;
-
-      }
-
-
-      /*
-       * ----------------------------------------------------------
-       * ADD TO CART
-       * ----------------------------------------------------------
-       */
-
-      if (
-        form.dataset.submitHandlerInitialized !==
-        'true'
-      ) {
-
-        form.dataset.submitHandlerInitialized =
-          'true';
-
-
-        form.addEventListener(
-          'submit',
-          async function (event) {
-
-            event.preventDefault();
-
-
-            /*
-             * Prevent double submission.
-             */
-
-            if (
-              form.dataset.submitting ===
-              'true'
-            ) {
-
-              return;
-
-            }
-
-
-            /*
-             * Get current options.
-             */
-
-            var selectedOptions =
-              getSelectedOptions();
-
-
-            /*
-             * Find exact selected product variant.
-             */
-
-            var selectedVariant =
-              findVariant(
-                selectedOptions
-              );
-
-
-            if (!selectedVariant) {
-
-              alert(
-                'Please select a valid product variant.'
-              );
-
-              return;
-
-            }
-
-
-            /*
-             * Make absolutely sure hidden input
-             * contains the selected variant ID.
-             */
-
-            variantInput.value =
-              selectedVariant.id;
-
-
-            /*
-             * Check availability.
-             */
-
-            if (!selectedVariant.available) {
-
-              alert(
-                'This variant is currently sold out.'
-              );
-
-              return;
-
-            }
-
-
-            form.dataset.submitting =
-              'true';
-
-
-            if (addToCartButton) {
-              addToCartButton.disabled = true;
-            }
-
-
-            try {
-
-              /*
-               * ------------------------------------------------
-               * MAIN PRODUCT
-               * ------------------------------------------------
-               */
-
-              var cartItems = [
-
-                {
-                  id: Number(
-                    selectedVariant.id
-                  ),
-
-                  quantity: 1
-
-                }
-
-              ];
-
-
-              /*
-               * ------------------------------------------------
-               * AUTOMATIC PRODUCT
-               * ------------------------------------------------
-               */
-
-              var autoProduct =
-                getAutomaticProduct();
-
-
-              if (autoProduct) {
+              if (
+                autoProduct &&
+                autoProduct.variants
+              ) {
 
                 /*
-                 * Check whether current product has
-                 * Black selected.
+                 * Check selected values.
                  */
 
-                var hasBlack =
-                  selectedOptions.some(
+                const normalizedOptions =
+                  options.map(
                     function (value) {
 
                       return String(value)
                         .trim()
-                        .toLowerCase() ===
-                        'black';
+                        .toLowerCase();
 
                     }
                   );
 
 
-                /*
-                 * Check whether current product has
-                 * Medium selected.
-                 */
-
-                var hasMedium =
-                  selectedOptions.some(
-                    function (value) {
-
-                      return String(value)
-                        .trim()
-                        .toLowerCase() ===
-                        'medium';
-
-                    }
+                const hasBlack =
+                  normalizedOptions.includes(
+                    'black'
                   );
 
 
-                console.log(
-                  '[Popup] Automatic product condition:',
-                  {
-                    hasBlack: hasBlack,
-                    hasMedium: hasMedium,
-                    selectedOptions:
-                      selectedOptions
-                  }
-                );
+                const hasMedium =
+                  normalizedOptions.includes(
+                    'medium'
+                  );
 
 
                 /*
-                 * ONLY add Soft Winter Jacket when:
-                 *
-                 * Black + Medium
+                 * ONLY Black + Medium triggers
+                 * the automatic product.
                  */
 
                 if (
@@ -1711,8 +1246,8 @@ body.quick-view-open {
                   hasMedium
                 ) {
 
-                  var autoVariant =
-                    findAutoVariant(
+                  const autoVariant =
+                    findAutoProductVariant(
                       autoProduct
                     );
 
@@ -1726,7 +1261,7 @@ body.quick-view-open {
 
                     if (
                       Number(
-                        autoProduct.productId
+                        autoProduct.product_id
                       ) !==
                       Number(
                         selectedVariant.product_id
@@ -1734,18 +1269,16 @@ body.quick-view-open {
                     ) {
 
                       cartItems.push({
-
                         id: Number(
                           autoVariant.id
                         ),
-
                         quantity: 1
-
                       });
 
 
                       console.log(
-                        '[Popup] Adding automatic product:',
+                        'AUTO PRODUCT ADDED:',
+                        autoProduct.title,
                         autoVariant.id,
                         autoVariant.options
                       );
@@ -1755,7 +1288,7 @@ body.quick-view-open {
                   } else {
 
                     console.warn(
-                      '[Popup] Black + Medium selected, but no Black + Medium variant exists on the automatic product.'
+                      'Black + Medium selected, but the automatic product does not have a Black + Medium variant.'
                     );
 
                   }
@@ -1763,190 +1296,102 @@ body.quick-view-open {
                 }
 
               }
-
-
-              /*
-               * ------------------------------------------------
-               * ADD ALL ITEMS
-               * ------------------------------------------------
-               */
-
-              console.log(
-                '[Popup] Final cart items:',
-                cartItems
-              );
-
-
-              var response =
-                await fetch(
-                  window.Shopify.routes.root +
-                  'cart/add.js',
-                  {
-
-                    method: 'POST',
-
-                    headers: {
-
-                      'Content-Type':
-                        'application/json',
-
-                      'Accept':
-                        'application/json'
-
-                    },
-
-                    body:
-                      JSON.stringify({
-                        items:
-                          cartItems
-                      })
-
-                  }
-                );
-
-
-              var data =
-                await response.json();
-
-
-              if (!response.ok) {
-
-                throw new Error(
-                  data.description ||
-                  data.message ||
-                  'Unable to add product to cart.'
-                );
-
-              }
-
-
-              console.log(
-                '[Popup] Added to cart:',
-                data
-              );
-
-
-              /*
-               * Let the Shopify theme update
-               * its cart UI.
-               */
-
-              document.dispatchEvent(
-                new CustomEvent(
-                  'cart:updated'
-                )
-              );
-
-
-              document.dispatchEvent(
-                new CustomEvent(
-                  'cart:refresh'
-                )
-              );
-
-
-              document.dispatchEvent(
-                new CustomEvent(
-                  'ajaxProduct:added'
-                )
-              );
-
-
-              /*
-               * Try to update cart drawer.
-               */
-
-              var cartDrawer =
-                document.querySelector(
-                  'cart-drawer'
-                );
-
-
-              if (
-                cartDrawer &&
-                typeof cartDrawer.renderContents ===
-                'function'
-              ) {
-
-                try {
-
-                  var cartResponse =
-                    await fetch(
-                      window.Shopify.routes.root +
-                      'cart.js'
-                    );
-
-
-                  var cart =
-                    await cartResponse.json();
-
-
-                  cartDrawer.renderContents(
-                    cart
-                  );
-
-                } catch (drawerError) {
-
-                  console.warn(
-                    '[Popup] Cart drawer refresh failed:',
-                    drawerError
-                  );
-
-                }
-
-              }
-
-
-              /*
-               * Close popup after successful
-               * add to cart.
-               */
-
-              closePopup(popup);
-
-
-            } catch (error) {
-
-              console.error(
-                '[Popup] Add to cart error:',
-                error
-              );
-
-
-              alert(
-                error.message ||
-                'Unable to add product to cart.'
-              );
-
-
-            } finally {
-
-              form.dataset.submitting =
-                'false';
-
-
-              /*
-               * Recalculate selected variant
-               * and restore button state.
-               */
-
-              updateVariant();
 
             }
 
+
+            /*
+             * ------------------------------------------------
+             * ADD BOTH PRODUCTS IN ONE REQUEST
+             * ------------------------------------------------
+             */
+
+            const response =
+              await fetch(
+                window.Shopify.routes.root +
+                'cart/add.js',
+                {
+                  method: 'POST',
+
+                  headers: {
+                    'Content-Type':
+                      'application/json',
+
+                    'Accept':
+                      'application/json'
+                  },
+
+                  body: JSON.stringify({
+                    items: cartItems
+                  })
+                }
+              );
+
+
+            const data =
+              await response.json();
+
+
+            if (!response.ok) {
+
+              throw new Error(
+                data.description ||
+                data.message ||
+                'Unable to add product to cart.'
+              );
+
+            }
+
+
+            console.log(
+              'CART ITEMS ADDED:',
+              cartItems
+            );
+
+
+            /*
+             * ------------------------------------------------
+             * CLOSE POPUP
+             * ------------------------------------------------
+             */
+
+            closePopup(popup);
+
+
+            /*
+             * ------------------------------------------------
+             * OPEN / REFRESH CART DRAWER
+             * ------------------------------------------------
+             */
+
+            await refreshCart();
+
+
+          } catch (error) {
+
+            console.error(
+              'Add to cart error:',
+              error
+            );
+
+
+            alert(
+              error.message ||
+              'Unable to add product to cart.'
+            );
+
+
+          } finally {
+
+            form.dataset.submitting =
+              'false';
+
+            updateVariant();
+
           }
-        );
 
-      }
-
-
-      /*
-       * ----------------------------------------------------------
-       * INITIAL VARIANT
-       * ----------------------------------------------------------
-       */
-
-      updateVariant();
+        }
+      );
 
     });
 
@@ -1954,45 +1399,272 @@ body.quick-view-open {
 
 
   /*
-   * ============================================================
-   * INITIALIZE
-   * ============================================================
+   * ------------------------------------------------------------
+   * AUTOMATIC PRODUCT VARIANT MATCHER
+   * ------------------------------------------------------------
+   *
+   * This specifically finds:
+   *
+   * BLACK + MEDIUM
+   *
+   * regardless of whether the automatic product
+   * has:
+   *
+   * Color / Size
+   *
+   * or
+   *
+   * Size / Color
+   *
+   * ------------------------------------------------------------
    */
 
-  function initialize() {
-
-    initPopupSystem(
-      document
-    );
-
-    /*
-     * Initialize all forms immediately.
-     */
-
-    initPopupProductForms(
-      document
-    );
-
-    initEscapeKey();
-
-  }
-
-
-  if (
-    document.readyState ===
-    'loading'
+  function findAutoProductVariant(
+    autoProduct
   ) {
 
-    document.addEventListener(
-      'DOMContentLoaded',
-      initialize
-    );
+    if (
+      !autoProduct ||
+      !Array.isArray(
+        autoProduct.variants
+      )
+    ) {
+      return null;
+    }
 
-  } else {
 
-    initialize();
+    /*
+     * First: exact variant containing
+     * BOTH Black and Medium.
+     */
+
+    const matchingVariant =
+      autoProduct.variants.find(
+        function (variant) {
+
+          if (
+            !variant.options ||
+            !Array.isArray(
+              variant.options
+            )
+          ) {
+            return false;
+          }
+
+
+          const values =
+            variant.options.map(
+              function (value) {
+
+                return String(value)
+                  .trim()
+                  .toLowerCase();
+
+              }
+            );
+
+
+          return (
+            values.includes('black') &&
+            values.includes('medium')
+          );
+
+        }
+      );
+
+
+    if (matchingVariant) {
+      return matchingVariant;
+    }
+
+
+    return null;
 
   }
+
+
+  /*
+   * ------------------------------------------------------------
+   * CART REFRESH
+   * ------------------------------------------------------------
+   */
+
+  async function refreshCart() {
+
+    /*
+     * Get current cart first.
+     */
+
+    let cart = null;
+
+
+    try {
+
+      const response =
+        await fetch(
+          window.Shopify.routes.root +
+          'cart.js',
+          {
+            headers: {
+              'Accept':
+                'application/json'
+            }
+          }
+        );
+
+
+      cart =
+        await response.json();
+
+    } catch (error) {
+
+      console.warn(
+        'Unable to fetch cart:',
+        error
+      );
+
+    }
+
+
+    /*
+     * Dispatch events for themes/apps.
+     */
+
+    document.dispatchEvent(
+      new CustomEvent(
+        'cart:updated',
+        {
+          detail: {
+            cart: cart
+          }
+        }
+      )
+    );
+
+
+    document.dispatchEvent(
+      new CustomEvent(
+        'cart:refresh'
+      )
+    );
+
+
+    document.dispatchEvent(
+      new CustomEvent(
+        'ajaxProduct:added',
+        {
+          detail: {
+            cart: cart
+          }
+        }
+      )
+    );
+
+
+    /*
+     * Try Shopify cart drawer.
+     */
+
+    const cartDrawer =
+      document.querySelector(
+        'cart-drawer'
+      );
+
+
+    if (
+      cartDrawer &&
+      typeof cartDrawer.renderContents ===
+      'function'
+    ) {
+
+      try {
+
+        cartDrawer.renderContents(
+          cart
+        );
+
+      } catch (error) {
+
+        console.warn(
+          'Cart drawer render failed:',
+          error
+        );
+
+      }
+
+    }
+
+
+    /*
+     * Try common cart drawer open methods.
+     */
+
+    if (cartDrawer) {
+
+      if (
+        typeof cartDrawer.open ===
+        'function'
+      ) {
+
+        cartDrawer.open();
+
+        return;
+
+      }
+
+
+      if (
+        typeof cartDrawer.setActiveElement ===
+        'function'
+      ) {
+
+        try {
+          cartDrawer.setActiveElement(
+            document.activeElement
+          );
+        } catch (e) {}
+
+      }
+
+    }
+
+
+    /*
+     * Try cart notification.
+     */
+
+    const cartNotification =
+      document.querySelector(
+        'cart-notification'
+      );
+
+
+    if (
+      cartNotification &&
+      typeof cartNotification.open ===
+      'function'
+    ) {
+
+      try {
+
+        cartNotification.open();
+
+        return;
+
+      } catch (error) {}
+
+    }
+
+  }
+
+
+  /*
+   * ------------------------------------------------------------
+   * INITIALIZE
+   * ------------------------------------------------------------
+   */
+
+  initPopupVariants();
 
 
   /*
@@ -2003,22 +1675,18 @@ body.quick-view-open {
     'shopify:section:load',
     function (event) {
 
-      var sectionElement =
-        event.target;
+      if (
+        event.target &&
+        event.target.id ===
+        'custom-featured-grid-{{ section.id }}'
+      ) {
 
+        initPopupVariants();
 
-      initPopupSystem(
-        sectionElement
-      );
-
-
-      initPopupProductForms(
-        sectionElement
-      );
+      }
 
     }
   );
-
 
 })();
 </script>
@@ -2036,20 +1704,20 @@ body.quick-view-open {
     {
       "type": "product",
       "id": "select_product",
-      "label": "Select Product",
-      "info": "Product that is added automatically when Black and Medium is selected."
+      "label": "Automatic Product",
+      "info": "This product is automatically added when Black and Medium are selected."
     },
     {
       "type": "text",
       "id": "section_padding_desktop",
       "label": "Section Padding (Desktop)",
-      "info": "Write in this format (top right bottom left)"
+      "info": "Example: 40px 20px 40px 20px"
     },
     {
       "type": "text",
       "id": "section_padding_mobile",
       "label": "Section Padding (Mobile)",
-      "info": "Write in this format (top right bottom left)"
+      "info": "Example: 20px 15px 20px 15px"
     }
   ],
   "blocks": [
