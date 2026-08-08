@@ -43,8 +43,8 @@
     </div>
   </div>
 
-  <!-- Product Form -->
-  {% form 'product', product, class: 'popup_product_form' %}
+  <!-- Product Form (plain HTML form, no Shopify form tag) -->
+  <form class="popup_product_form">
 
     <input
       type="hidden"
@@ -144,7 +144,7 @@
 
     </button>
 
-  {% endform %}
+  </form>
 
 </div>
 
@@ -691,9 +691,6 @@
 
         /*
          * Prevent duplicate clicks/submissions.
-         *
-         * This is important because it prevents
-         * quantity 2, 3, 4 etc.
          */
 
         if (form.dataset.addingToCart === 'true') {
@@ -917,45 +914,12 @@
 
 
           /*
-           * If the theme has a cart drawer,
-           * try to refresh it.
+           * Redirect to the cart page after
+           * items have been added.
            */
 
-          if (
-            typeof window.refreshCart ===
-            'function'
-          ) {
-
-            window.refreshCart();
-
-          }
-
-
-          /*
-           * Reset form state.
-           */
-
-          form.dataset.addingToCart =
-            'false';
-
-
-          /*
-           * Restore button state.
-           */
-
-          if (addButton) {
-
-            addButton.disabled = false;
-
-          }
-
-
-          if (addButtonText) {
-
-            addButtonText.innerHTML =
-              'ADD TO CART <span class="popup_add_to_cart_arrow"> &xrarr; </span>';
-
-          }
+          window.location.href =
+            window.Shopify.routes.root + 'cart';
 
         })
 
