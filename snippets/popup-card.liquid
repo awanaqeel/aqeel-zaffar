@@ -1,186 +1,150 @@
-<div class="popup_card">
+{% assign auto_added_product = section.settings.select_product.selected_or_first_available_variant.id %}
 
-  <!-- ============================================
-       PRODUCT INFORMATION
-  ============================================= -->
-
-  <div class="popup_product_info">
-
-    <h3 class="popup_product_title">
-      {{ product.title }}
-    </h3>
-
-
-    <div class="popup_product_price">
-      {{ product.selected_or_first_available_variant.price | money }}
-    </div>
-
-
-    {% if product.description != blank %}
-
-      <div class="popup_product_description">
-        {{ product.description
-          | strip_html
-          | truncatewords: 30
-        }}
-      </div>
-
-    {% endif %}
-
+<div class="popup_product_content">
+  <div class="product_popup_close" id="close-popup-{{ product.id }}">
+    <img
+      src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/Group_1000008157.svg?v=1786149863"
+      alt="close_icon"
+    >
   </div>
 
-
-  <!-- ============================================
-       PRODUCT JSON
-       
-       JavaScript uses this to find the exact
-       selected variant.
-  ============================================= -->
-
-  <script
-    type="application/json"
-    class="popup-product-json"
-  >
-    {{ product | json }}
-  </script>
-
-
-  <!-- ============================================
-       PRODUCT OPTIONS
-  ============================================= -->
-
-  {% unless product.has_only_default_variant %}
-
-    <div class="popup_product_options">
-
-      {% for option in product.options_with_values %}
-
-        <div
-          class="popup_product_option"
-          data-option-index="{{ forloop.index0 }}"
+  <div class="image_with_info">
+    <!-- Product Image -->
+    <div class="popup_product_image">
+      {% if product.featured_image %}
+        <img
+          src="{{ product.featured_image | image_url: width: 800 }}"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="lazy"
         >
+      {% endif %}
+    </div>
 
-          <label class="popup_option_label">
-            {{ option.name }}
-          </label>
+    <!-- Product Information -->
+    <div class="popup_product_info">
 
+      <!-- Product Title -->
+      <h3 class="popup_product_title">
+        {{ product.title }}
+      </h3>
 
-          {% if forloop.first %}
+      <!-- Product Price -->
+      <div class="popup_product_price">
+        {{ product.selected_or_first_available_variant.price | money }}
+      </div>
 
-            <!-- ======================================
-                 FIRST OPTION - SELECT
-            ======================================= -->
+      <!-- Description -->
+      {% if product.description != blank %}
+        <div class="popup_product_description">
+          {{ product.description | strip_html | truncatewords: 30 }}
+        </div>
+      {% endif %}
 
-            <div class="popup_select_wrapper">
+    </div>
+  </div>
 
-              <select
-                class="popup_option_select"
-                data-option-index="{{ forloop.index0 }}"
-              >
+  <!-- Product Form -->
+  {% form 'product', product, class: 'popup_product_form' %}
 
-                <option
-                  value=""
-                  disabled
-                  {% unless option.selected_value %}
-                    selected
-                  {% endunless %}
+    <input
+      type="hidden"
+      name="id"
+      class="popup_variant_id"
+      value="{{ product.selected_or_first_available_variant.id }}"
+    >
+
+    <!-- Product Options -->
+    {% unless product.has_only_default_variant %}
+      <div class="popup_product_options">
+
+        {% for option in product.options_with_values %}
+
+          <div
+            class="popup_product_option"
+            data-option-index="{{ forloop.index0 }}"
+          >
+
+            <label class="popup_option_label">
+              {{ option.name }}
+            </label>
+
+            {% if forloop.first %}
+
+              <!-- First option as select -->
+              <div class="popup_select_wrapper">
+                <select
+                  class="popup_option_select"
+                  data-option-index="{{ forloop.index0 }}"
+                  placeholder="Choose your size;"
                 >
-                  Choose your {{ option.name | downcase }}
-                </option>
+                    <option value="" disabled selected>Choose your size</option>
 
+                  {% for value in option.values %}
+                    <option
+                      value="{{ value | escape }}"
+
+                    >
+                      {{ value }}
+                    </option>
+                  {% endfor %}
+
+                </select>
+
+                <span class="popup_select_arrow">↓</span>
+              </div>
+
+            {% else %}
+
+              <!-- Other options as buttons -->
+              <div class="popup_option_buttons">
 
                 {% for value in option.values %}
 
-                  <option
-                    value="{{ value | escape }}"
-                    {% if option.selected_value == value %}
-                      selected
-                    {% endif %}
+                  <button
+                    type="button"
+                    class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                    style="border-left: 4px solid {{ value }}"
+                    data-option-value="{{ value | escape }}"
+                    data-option-index="{{ forloop.parentloop.index0 }}"
                   >
                     {{ value }}
-                  </option>
+                  </button>
 
                 {% endfor %}
 
-              </select>
+              </div>
 
+            {% endif %}
 
-              <span class="popup_select_arrow">
-                ↓
-              </span>
+          </div>
 
-            </div>
+        {% endfor %}
 
-
-          {% else %}
-
-            <!-- ======================================
-                 OTHER OPTIONS - BUTTONS
-            ======================================= -->
-
-            <div class="popup_option_buttons">
-
-              {% for value in option.values %}
-
-                <button
-                  type="button"
-                  class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
-                  style="border-left: 4px solid {{ value }}"
-                  data-option-value="{{ value | escape }}"
-                  data-option-index="{{ forloop.parentloop.index0 }}"
-                >
-                  {{ value }}
-                </button>
-
-              {% endfor %}
-
-            </div>
-
-          {% endif %}
-
-        </div>
-
-      {% endfor %}
-
-    </div>
-
-  {% endunless %}
-
-
-  <!-- ============================================
-       ADD TO CART
-       
-       NOT A FORM.
-       
-       JavaScript handles this button.
-  ============================================= -->
-
-  <button
-    type="button"
-    class="popup_add_to_cart custom-banner__button"
-    {% unless product.selected_or_first_available_variant.available %}
-      disabled
+      </div>
     {% endunless %}
-  >
 
-    <span class="popup_add_to_cart_text">
+    <!-- Add To Cart -->
+    <button
+      type="submit"
+      name="add"
+      class="popup_add_to_cart custom-banner__button"
+      {% unless product.selected_or_first_available_variant.available %}
+        disabled
+      {% endunless %}
+    >
 
-      {% if product.selected_or_first_available_variant.available %}
+      <span class="popup_add_to_cart_text">
+        {% if product.selected_or_first_available_variant.available %}
+          ADD TO CART
+          <span class="popup_add_to_cart_arrow"> &xrarr; </span>
+        {% else %}
+          SOLD OUT
+        {% endif %}
+      </span>
 
-        ADD TO CART
+    </button>
 
-        <span class="popup_add_to_cart_arrow">
-          &xrarr;
-        </span>
-
-      {% else %}
-
-        SOLD OUT
-
-      {% endif %}
-
-    </span>
-
-  </button>
+  {% endform %}
 
 </div>
+
