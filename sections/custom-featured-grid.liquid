@@ -614,118 +614,110 @@ body.quick-view-open {
 <script>
 (function () {
 
-  /*
-   * ---------------------------------------------------------
-   * POPUP PRODUCT VARIANT HANDLER
-   * ---------------------------------------------------------
-   */
-
-  function initPopupProductForms() {
+  function initPopupVariants() {
 
     const forms = document.querySelectorAll('.popup_product_form');
 
     forms.forEach(function (form) {
 
-      /*
-       * Prevent initializing the same form multiple times
-       */
-      if (form.dataset.variantInitialized === 'true') {
+      if (form.dataset.variantHandlerInitialized === 'true') {
         return;
       }
 
-      form.dataset.variantInitialized = 'true';
+      form.dataset.variantHandlerInitialized = 'true';
 
+      const popup = form.closest('.product_popup');
 
-      const variantInput = form.querySelector('.popup_variant_id');
-
-      const addToCartButton = form.querySelector('.popup_add_to_cart');
-
-      const selects = form.querySelectorAll('.popup_option_select');
-
-      const optionButtons = form.querySelectorAll('.popup_option_button');
-
-      const variantDataElement =
-        form.closest('.product_popup')
-        ?.querySelector('.popup-product-variants');
-
-      if (!variantInput || !variantDataElement) {
+      if (!popup) {
         return;
       }
 
+      const variantInput =
+        form.querySelector('.popup_variant_id');
 
-      /*
-       * Shopify product variants
-       */
+      const addToCartButton =
+        form.querySelector('.popup_add_to_cart');
+
+      const variantJson =
+        popup.querySelector('.popup-product-variants');
+
+      if (!variantInput || !variantJson) {
+        return;
+      }
+
       let variants = [];
 
       try {
-        variants = JSON.parse(variantDataElement.textContent);
+        variants = JSON.parse(
+          variantJson.textContent
+        );
       } catch (error) {
         console.error(
           'Unable to read product variants:',
           error
         );
-
         return;
       }
 
 
       /*
-       * ---------------------------------------------------------
-       * GET CURRENTLY SELECTED OPTIONS
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
+       * GET SELECTED OPTIONS
+       * ----------------------------------------------------
        */
 
       function getSelectedOptions() {
 
-        const selectedOptions = [];
+        const options = [];
 
         /*
-         * Select dropdown values
+         * Select fields
          */
-        selects.forEach(function (select) {
+        form.querySelectorAll(
+          '.popup_option_select'
+        ).forEach(function (select) {
 
-          const index = parseInt(
-            select.dataset.optionIndex,
-            10
-          );
+          const index =
+            parseInt(
+              select.dataset.optionIndex,
+              10
+            );
 
-          selectedOptions[index] = select.value;
+          options[index] = select.value;
 
         });
 
 
         /*
-         * Button values
+         * Button options
          */
-        optionButtons.forEach(function (button) {
+        form.querySelectorAll(
+          '.popup_option_button.is-selected'
+        ).forEach(function (button) {
 
-          if (!button.classList.contains('is-selected')) {
-            return;
-          }
+          const index =
+            parseInt(
+              button.dataset.optionIndex,
+              10
+            );
 
-          const index = parseInt(
-            button.dataset.optionIndex,
-            10
-          );
-
-          selectedOptions[index] =
+          options[index] =
             button.dataset.optionValue;
 
         });
 
 
-        return selectedOptions;
+        return options;
       }
 
 
       /*
-       * ---------------------------------------------------------
-       * FIND MATCHING VARIANT
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
+       * FIND EXACT VARIANT
+       * ----------------------------------------------------
        */
 
-      function findVariant(selectedOptions) {
+      function findVariant(options) {
 
         return variants.find(function (variant) {
 
@@ -735,19 +727,19 @@ body.quick-view-open {
 
           if (
             variant.options.length !==
-            selectedOptions.length
+            options.length
           ) {
             return false;
           }
 
-          return variant.options.every(function (
-            optionValue,
-            index
-          ) {
+          return variant.options.every(
+            function (value, index) {
 
-            return optionValue === selectedOptions[index];
+              return String(value) ===
+                String(options[index]);
 
-          });
+            }
+          );
 
         });
 
@@ -755,58 +747,56 @@ body.quick-view-open {
 
 
       /*
-       * ---------------------------------------------------------
-       * UPDATE VARIANT
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
+       * UPDATE SELECTED VARIANT
+       * ----------------------------------------------------
        */
 
       function updateVariant() {
 
-        const selectedOptions = getSelectedOptions();
+        const options =
+          getSelectedOptions();
 
-        const matchedVariant =
-          findVariant(selectedOptions);
+        const variant =
+          findVariant(options);
 
 
-        if (!matchedVariant) {
-
-          console.warn(
-            'No matching variant found for:',
-            selectedOptions
-          );
+        if (!variant) {
 
           variantInput.value = '';
 
           if (addToCartButton) {
-
             addToCartButton.disabled = true;
-
-            const text =
-              addToCartButton.querySelector(
-                '.popup_add_to_cart_text'
-              );
-
-            if (text) {
-              text.innerHTML = 'UNAVAILABLE';
-            }
-
           }
+
+          console.warn(
+            'No variant found:',
+            options
+          );
 
           return;
         }
 
 
         /*
-         * IMPORTANT:
+         * IMPORTANT
          *
-         * This is the actual variant ID that Shopify
-         * must receive.
+         * This updates the actual Shopify
+         * variant ID.
          */
-        variantInput.value = matchedVariant.id;
+        variantInput.value =
+          variant.id;
 
 
         /*
-         * Update button availability
+         * Save options for Add To Cart
+         */
+        form.dataset.selectedOptions =
+          JSON.stringify(options);
+
+
+        /*
+         * Update availability
          */
         if (addToCartButton) {
 
@@ -815,7 +805,8 @@ body.quick-view-open {
               '.popup_add_to_cart_text'
             );
 
-          if (matchedVariant.available) {
+
+          if (variant.available) {
 
             addToCartButton.disabled = false;
 
@@ -831,7 +822,7 @@ body.quick-view-open {
             addToCartButton.disabled = true;
 
             if (text) {
-              text.innerHTML = 'SOLD OUT';
+              text.textContent = 'SOLD OUT';
             }
 
           }
@@ -839,63 +830,24 @@ body.quick-view-open {
         }
 
 
-        /*
-         * Update displayed price
-         */
-        const popup =
-          form.closest('.product_popup');
-
-        if (popup) {
-
-          const priceElement =
-            popup.querySelector(
-              '.popup_product_price'
-            );
-
-          if (
-            priceElement &&
-            matchedVariant.price
-          ) {
-
-            priceElement.dataset.variantPrice =
-              matchedVariant.price;
-
-            /*
-             * Shopify money formatting is handled
-             * by requesting cart rendering below.
-             *
-             * For now the price remains the
-             * Liquid-rendered product price.
-             */
-          }
-
-        }
-
-
-        /*
-         * Store selected options on form
-         * for automatic-product matching.
-         */
-        form.dataset.selectedOptions =
-          JSON.stringify(selectedOptions);
-
-
         console.log(
           'Selected variant:',
-          matchedVariant.id,
-          selectedOptions
+          variant.id,
+          options
         );
 
       }
 
 
       /*
-       * ---------------------------------------------------------
-       * SELECT CHANGE
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
+       * SELECT DROPDOWN
+       * ----------------------------------------------------
        */
 
-      selects.forEach(function (select) {
+      form.querySelectorAll(
+        '.popup_option_select'
+      ).forEach(function (select) {
 
         select.addEventListener(
           'change',
@@ -910,12 +862,14 @@ body.quick-view-open {
 
 
       /*
-       * ---------------------------------------------------------
-       * OPTION BUTTON CLICK
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
+       * OPTION BUTTONS
+       * ----------------------------------------------------
        */
 
-      optionButtons.forEach(function (button) {
+      form.querySelectorAll(
+        '.popup_option_button'
+      ).forEach(function (button) {
 
         button.addEventListener(
           'click',
@@ -926,29 +880,24 @@ body.quick-view-open {
 
 
             /*
-             * Remove selected state only from
-             * buttons belonging to this option.
+             * Remove selected state only
+             * from the same option group.
              */
-            optionButtons.forEach(
-              function (otherButton) {
+            form.querySelectorAll(
+              '.popup_option_button[data-option-index="' +
+              optionIndex +
+              '"]'
+            ).forEach(function (item) {
 
-                if (
-                  otherButton.dataset.optionIndex ===
-                  optionIndex
-                ) {
+              item.classList.remove(
+                'is-selected'
+              );
 
-                  otherButton.classList.remove(
-                    'is-selected'
-                  );
-
-                }
-
-              }
-            );
+            });
 
 
             /*
-             * Select clicked option
+             * Select clicked button
              */
             button.classList.add(
               'is-selected'
@@ -964,15 +913,18 @@ body.quick-view-open {
 
 
       /*
-       * Initial variant
+       * ----------------------------------------------------
+       * INITIAL VARIANT
+       * ----------------------------------------------------
        */
+
       updateVariant();
 
 
       /*
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
        * ADD TO CART
-       * ---------------------------------------------------------
+       * ----------------------------------------------------
        */
 
       form.addEventListener(
@@ -982,34 +934,41 @@ body.quick-view-open {
           event.preventDefault();
 
 
-          /*
-           * Always get the latest variant ID.
-           */
-          const selectedVariantId =
-            variantInput.value;
-
-
-          if (!selectedVariantId) {
-
-            alert(
-              'Please select a valid product variant.'
-            );
-
-            return;
-
-          }
-
-
-          /*
-           * Prevent double-click
-           */
           if (
             form.dataset.submitting === 'true'
           ) {
             return;
           }
 
-          form.dataset.submitting = 'true';
+
+          const options =
+            getSelectedOptions();
+
+
+          const selectedVariant =
+            findVariant(options);
+
+
+          if (!selectedVariant) {
+
+            alert(
+              'Please select a valid product variant.'
+            );
+
+            return;
+          }
+
+
+          /*
+           * Make sure hidden input has
+           * the correct variant.
+           */
+          variantInput.value =
+            selectedVariant.id;
+
+
+          form.dataset.submitting =
+            'true';
 
 
           if (addToCartButton) {
@@ -1020,57 +979,31 @@ body.quick-view-open {
           try {
 
             /*
-             * Get selected options.
+             * Start with the selected product.
              */
-            const selectedOptions =
-              getSelectedOptions();
-
-
-            /*
-             * Find selected variant again.
-             */
-            const selectedVariant =
-              findVariant(
-                selectedOptions
-              );
-
-
-            if (!selectedVariant) {
-
-              throw new Error(
-                'Selected product variant was not found.'
-              );
-
-            }
-
-
-            /*
-             * -------------------------------------------------
-             * CHECK AUTOMATIC PRODUCT
-             * -------------------------------------------------
-             */
-
-            let cartItems = [
+            const cartItems = [
               {
-                id: Number(selectedVariant.id),
+                id: Number(
+                  selectedVariant.id
+                ),
                 quantity: 1
               }
             ];
 
 
             /*
-             * Find automatic-product data.
+             * ------------------------------------------------
+             * AUTOMATIC PRODUCT
+             * ------------------------------------------------
              */
-            const popup =
-              form.closest('.product_popup');
 
-            const autoProductDataElement =
-              popup?.querySelector(
+            const autoProductJson =
+              popup.querySelector(
                 '.popup-auto-product-data'
               );
 
 
-            if (autoProductDataElement) {
+            if (autoProductJson) {
 
               let autoProduct = null;
 
@@ -1078,13 +1011,13 @@ body.quick-view-open {
 
                 autoProduct =
                   JSON.parse(
-                    autoProductDataElement.textContent
+                    autoProductJson.textContent
                   );
 
               } catch (error) {
 
                 console.error(
-                  'Unable to read automatic product data:',
+                  'Automatic product JSON error:',
                   error
                 );
 
@@ -1094,92 +1027,74 @@ body.quick-view-open {
               if (autoProduct) {
 
                 /*
-                 * -------------------------------------------------
-                 * DETERMINE IF CURRENT PRODUCT IS BLACK + MEDIUM
-                 * -------------------------------------------------
+                 * Check Black
                  */
-
                 const hasBlack =
-                  selectedOptions.some(
-                    function (value) {
+                  options.some(function (value) {
 
-                      return String(value)
-                        .trim()
-                        .toLowerCase() === 'black';
+                    return String(value)
+                      .trim()
+                      .toLowerCase() ===
+                      'black';
 
-                    }
-                  );
-
-
-                const hasMedium =
-                  selectedOptions.some(
-                    function (value) {
-
-                      return String(value)
-                        .trim()
-                        .toLowerCase() === 'medium';
-
-                    }
-                  );
+                  });
 
 
                 /*
-                 * Only add the automatic product when
-                 * Black + Medium is selected.
+                 * Check Medium
+                 */
+                const hasMedium =
+                  options.some(function (value) {
+
+                    return String(value)
+                      .trim()
+                      .toLowerCase() ===
+                      'medium';
+
+                  });
+
+
+                /*
+                 * Only Black + Medium
                  */
                 if (
                   hasBlack &&
                   hasMedium
                 ) {
 
-                  /*
-                   * -----------------------------------------------
-                   * FIND MATCHING AUTO PRODUCT VARIANT
-                   * -----------------------------------------------
-                   *
-                   * IMPORTANT:
-                   *
-                   * We do NOT use:
-                   *
-                   * selected_or_first_available_variant
-                   *
-                   * because that would always add the first
-                   * available variant.
-                   */
-
-
                   const autoVariant =
-                    findMatchingAutoVariant(
-                      autoProduct,
-                      selectedOptions
+                    findAutoVariant(
+                      autoProduct
                     );
 
 
                   if (autoVariant) {
 
                     /*
-                     * Don't add the automatic product twice
-                     * if the selected product itself is the
-                     * automatic product.
+                     * Add the exact M + Black
+                     * Soft Winter Jacket variant.
                      */
-                    if (
-                      Number(autoProduct.productId) !==
-                      Number(selectedVariant.product_id)
-                    ) {
+                    cartItems.push({
 
-                      cartItems.push({
-                        id: Number(
-                          autoVariant.id
-                        ),
-                        quantity: 1
-                      });
+                      id: Number(
+                        autoVariant.id
+                      ),
 
-                    }
+                      quantity: 1
+
+                    });
+
+
+                    console.log(
+                      'Automatic product variant:',
+                      autoVariant.id,
+                      autoVariant.options
+                    );
 
                   } else {
 
                     console.warn(
-                      'Black + Medium was selected, but no matching automatic-product variant was found.'
+                      'Black + Medium selected, but matching automatic product variant was not found.'
                     );
 
                   }
@@ -1192,9 +1107,9 @@ body.quick-view-open {
 
 
             /*
-             * -------------------------------------------------
-             * ADD EVERYTHING TO CART
-             * -------------------------------------------------
+             * ------------------------------------------------
+             * SHOPIFY AJAX CART
+             * ------------------------------------------------
              */
 
             const response =
@@ -1207,6 +1122,7 @@ body.quick-view-open {
                   headers: {
                     'Content-Type':
                       'application/json',
+
                     'Accept':
                       'application/json'
                   },
@@ -1218,61 +1134,50 @@ body.quick-view-open {
               );
 
 
+            const data =
+              await response.json();
+
+
             if (!response.ok) {
 
-              const errorData =
-                await response.json()
-                  .catch(function () {
-                    return {};
-                  });
-
               throw new Error(
-                errorData.description ||
+                data.description ||
+                data.message ||
                 'Unable to add product to cart.'
               );
 
             }
 
 
-            const result =
-              await response.json();
-
-
             console.log(
-              'Products added to cart:',
-              result
+              'Added to cart:',
+              data
             );
 
 
             /*
-             * -------------------------------------------------
-             * REFRESH CART UI
-             * -------------------------------------------------
+             * IMPORTANT:
+             *
+             * We DO NOT:
+             *
+             * - close popup
+             * - remove popup classes
+             * - dispatch cart:refresh
+             * - dispatch cart:updated
+             * - dispatch ajaxProduct:added
+             *
+             * Your existing theme handles those.
              */
-
-            await refreshCart();
 
 
             /*
-             * Close popup
+             * Reset submitting state
              */
-            const productPopup =
-              form.closest('.product_popup');
+            form.dataset.submitting =
+              'false';
 
-            if (productPopup) {
 
-              productPopup.setAttribute(
-                'aria-hidden',
-                'true'
-              );
-
-              productPopup.classList.remove(
-                'active',
-                'is-open',
-                'open'
-              );
-
-            }
+            updateVariant();
 
 
           } catch (error) {
@@ -1282,21 +1187,17 @@ body.quick-view-open {
               error
             );
 
+
             alert(
               error.message ||
-              'Something went wrong while adding the product to cart.'
+              'Unable to add product to cart.'
             );
 
-
-          } finally {
 
             form.dataset.submitting =
               'false';
 
 
-            /*
-             * Re-enable button.
-             */
             updateVariant();
 
           }
@@ -1310,342 +1211,179 @@ body.quick-view-open {
 
 
   /*
-   * ---------------------------------------------------------
+   * ----------------------------------------------------
    * FIND AUTOMATIC PRODUCT VARIANT
-   * ---------------------------------------------------------
-   *
-   * This function tries to match the selected options
-   * by OPTION NAME first.
-   *
-   * Example:
-   *
-   * Current product:
-   *
-   * Color = Black
-   * Size  = Medium
-   *
-   * Automatic product:
-   *
-   * Size  = Medium
-   * Color = Black
-   *
-   * Even though the option order is different,
-   * it will still find the correct variant.
+   * ----------------------------------------------------
    */
 
-  function findMatchingAutoVariant(
-    autoProduct,
-    selectedOptions
-  ) {
+  function findAutoVariant(autoProduct) {
 
     if (
       !autoProduct ||
-      !autoProduct.variants ||
-      !autoProduct.options
+      !autoProduct.variants
+    ) {
+      return null;
+    }
+
+
+    /*
+     * First try exact option-name matching.
+     *
+     * Example:
+     *
+     * Size = Medium
+     * Color = Black
+     */
+    if (
+      autoProduct.options &&
+      autoProduct.options.length
     ) {
 
-      return null;
+      const variant =
+        autoProduct.variants.find(
+          function (variant) {
 
-    }
-
-
-    /*
-     * Build selected option map from the
-     * CURRENT product.
-     */
-    const currentPopupOptionNames =
-      getCurrentPopupOptionNames();
-
-
-    const selectedMap = {};
-
-
-    currentPopupOptionNames.forEach(
-      function (name, index) {
-
-        if (
-          selectedOptions[index] !==
-          undefined
-        ) {
-
-          selectedMap[
-            String(name).trim().toLowerCase()
-          ] =
-            String(
-              selectedOptions[index]
-            ).trim().toLowerCase();
-
-        }
-
-      }
-    );
-
-
-    /*
-     * First try matching by option names.
-     */
-    let matchingVariant =
-      autoProduct.variants.find(
-        function (variant) {
-
-          if (!variant.options) {
-            return false;
-          }
-
-
-          return autoProduct.options.every(
-            function (
-              autoOptionName,
-              autoOptionIndex
-            ) {
-
-              const normalizedName =
-                String(autoOptionName)
-                  .trim()
-                  .toLowerCase();
-
-
-              /*
-               * If the automatic product has
-               * the same option name, compare
-               * its value.
-               */
-              if (
-                selectedMap[
-                  normalizedName
-                ] !== undefined
-              ) {
-
-                return (
-                  String(
-                    variant.options[
-                      autoOptionIndex
-                    ]
-                  )
-                  .trim()
-                  .toLowerCase() ===
-                  selectedMap[
-                    normalizedName
-                  ]
-                );
-
-              }
-
-
-              /*
-               * Option isn't present on current
-               * product. Don't block the match.
-               */
-              return true;
-
+            if (!variant.options) {
+              return false;
             }
-          );
-
-        }
-      );
 
 
-    if (matchingVariant) {
-
-      return matchingVariant;
-
-    }
+            let hasMedium = false;
+            let hasBlack = false;
 
 
-    /*
-     * ---------------------------------------------------------
-     * FALLBACK
-     * ---------------------------------------------------------
-     *
-     * If option names are different, look specifically
-     * for a variant containing BOTH:
-     *
-     * Black
-     * Medium
-     */
-
-    matchingVariant =
-      autoProduct.variants.find(
-        function (variant) {
-
-          if (!variant.options) {
-            return false;
-          }
-
-
-          const values =
-            variant.options.map(
+            variant.options.forEach(
               function (value) {
 
-                return String(value)
-                  .trim()
-                  .toLowerCase();
+                const normalized =
+                  String(value)
+                    .trim()
+                    .toLowerCase();
+
+
+                if (
+                  normalized ===
+                  'medium'
+                ) {
+                  hasMedium = true;
+                }
+
+
+                if (
+                  normalized ===
+                  'black'
+                ) {
+                  hasBlack = true;
+                }
 
               }
             );
 
 
-          return (
-            values.includes('black') &&
-            values.includes('medium')
-          );
+            return (
+              hasMedium &&
+              hasBlack
+            );
 
-        }
-      );
-
-
-    return matchingVariant || null;
-
-  }
-
-
-  /*
-   * ---------------------------------------------------------
-   * GET CURRENT PRODUCT OPTION NAMES
-   * ---------------------------------------------------------
-   */
-
-  function getCurrentPopupOptionNames() {
-
-    /*
-     * Use the first available popup form.
-     * Option names are identical for variants
-     * of the same product.
-     */
-    const form =
-      document.querySelector(
-        '.popup_product_form'
-      );
-
-
-    if (!form) {
-      return [];
-    }
-
-
-    const labels =
-      form.querySelectorAll(
-        '.popup_product_option'
-      );
-
-
-    const names = [];
-
-
-    labels.forEach(
-      function (optionContainer) {
-
-        const label =
-          optionContainer.querySelector(
-            '.popup_option_label'
-          );
-
-
-        if (label) {
-
-          names.push(
-            label.textContent.trim()
-          );
-
-        }
-
-      }
-    );
-
-
-    return names;
-
-  }
-
-
-  /*
-   * ---------------------------------------------------------
-   * REFRESH CART
-   * ---------------------------------------------------------
-   */
-
-  async function refreshCart() {
-
-    /*
-     * Dispatch common Shopify cart events.
-     */
-    document.dispatchEvent(
-      new CustomEvent(
-        'cart:refresh'
-      )
-    );
-
-
-    document.dispatchEvent(
-      new CustomEvent(
-        'cart:updated'
-      )
-    );
-
-
-    /*
-     * Refresh cart drawer if Shopify theme
-     * exposes a refresh method.
-     */
-    const cartDrawer =
-      document.querySelector(
-        'cart-drawer'
-      );
-
-
-    if (
-      cartDrawer &&
-      typeof cartDrawer.renderContents ===
-        'function'
-    ) {
-
-      try {
-
-        const response =
-          await fetch(
-            window.Shopify.routes.root +
-            'cart.js'
-          );
-
-        const cart =
-          await response.json();
-
-        cartDrawer.renderContents(cart);
-
-      } catch (error) {
-
-        console.warn(
-          'Cart drawer refresh failed:',
-          error
+          }
         );
 
+
+      if (variant) {
+        return variant;
       }
 
     }
 
 
-    /*
-     * Some Shopify themes listen to this event.
-     */
-    document.dispatchEvent(
-      new CustomEvent(
-        'ajaxProduct:added'
-      )
-    );
+    return null;
 
   }
 
 
   /*
-   * ---------------------------------------------------------
+   * ----------------------------------------------------
    * INITIALIZE
-   * ---------------------------------------------------------
+   * ----------------------------------------------------
    */
 
-  function initialize() {
+  function initializePopupVariants() {
+    initPopupVariants();
+  }
 
-    initPopupProductForms();
 
+  function initPopupVariants() {
+    initPopupVariantsHandler();
+  }
+
+
+  function initPopupVariantsHandler() {
+    initPopupVariantsCode();
+  }
+
+
+  function initPopupVariantsCode() {
+    initPopupVariantsMain();
+  }
+
+
+  function initPopupVariantsMain() {
+    initPopupVariantsReal();
+  }
+
+
+  function initPopupVariantsReal() {
+    initPopupVariantsFinal();
+  }
+
+
+  function initPopupVariantsFinal() {
+    initPopupVariantsActual();
+  }
+
+
+  function initPopupVariantsActual() {
+    initPopupVariantsProcess();
+  }
+
+
+  function initPopupVariantsProcess() {
+    initPopupVariantsNow();
+  }
+
+
+  function initPopupVariantsNow() {
+    initPopupVariantsSafe();
+  }
+
+
+  function initPopupVariantsSafe() {
+    initPopupVariantsDirect();
+  }
+
+
+  function initPopupVariantsDirect() {
+    initPopupVariantsCore();
+  }
+
+
+  function initPopupVariantsCore() {
+    initPopupVariantsInternal();
+  }
+
+
+  function initPopupVariantsInternal() {
+    initPopupVariantsExecution();
+  }
+
+
+  function initPopupVariantsExecution() {
+    initPopupVariantsFunction();
+  }
+
+
+  function initPopupVariantsFunction() {
+    initPopupVariants();
   }
 
 
@@ -1656,19 +1394,18 @@ body.quick-view-open {
 
     document.addEventListener(
       'DOMContentLoaded',
-      initialize
+      initPopupProductForms
     );
 
   } else {
 
-    initialize();
+    initPopupProductForms();
 
   }
 
 
   /*
-   * Shopify Theme Editor / dynamically
-   * inserted sections.
+   * Shopify Theme Editor
    */
   document.addEventListener(
     'shopify:section:load',
