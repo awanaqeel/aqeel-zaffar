@@ -1,729 +1,557 @@
-<style>
-  #shopify-section-{{ section.id }}{
-  {% if section.settings.section_padding_desktop != blank %}
-    .custom-featured-grid {
-      padding: {{ section.settings.section_padding_desktop }};
-    }
-  {% endif %}
-
-  .section_heading h2 {
-    font-family: 'Lustria';
-    font-weight: 400;
-    font-size: 36px;
-    line-height: 120%;
-    letter-spacing: 0;
-    margin: 0 0 30px 0;
-  }
-
-  /* Product Grid */
-  .custom-product-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    width: 100%;
-  }
-
-   .custom-banner__button {
-    width: 100%;
-    max-width: 100%;
-    position: relative;
-    overflow: hidden;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 20.48px;
-    letter-spacing: 0px;
-    text-align: center;
-    text-transform: uppercase;
-    text-decoration: none;
-    color:#fff;
-    background-color: #000;
-    padding: 12px 39px;
-    max-width: 220px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-  }
-  .popup_add_to_cart_text, .popup_add_to_cart_arrow {
-  font-weight: 400;
-    font-size: 16px;
-    line-height: 20.48px;
-    letter-spacing: 0px;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  .custom-banner__button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF544;
-    transform: translateX(-100%);
-    transition: transform 0.4s ease;
-    z-index: -1;
-  }
-
-  .custom-banner__button .popup_add_to_cart_arrow {
-    margin-left: 10px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .custom-banner__button:hover::before {
-    transform: translateX(0);
-  }
-
-  .custom-banner__button:hover {
-    color: #000;
-  }
-
-  /* Product Grid Item */
-  .custom-product-grid-item {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-  }
-
-  /* Product Image */
-  .grid_image {
-    width: 100%;
-    height: 444px;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .grid_image img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Quick View Button */
-  .quick_view_btn {
-    position: absolute;
-
-    /* Desktop Position */
-    top: var(--quick-top);
-    bottom: var(--quick-bottom);
-    left: var(--quick-left);
-    right: var(--quick-right);
-
-    width: 16px;
-    height: 16px;
-
-    background: #F8F8F8E5;
-    border-radius: 50%;
-    box-shadow: 0px 3px 4px 0px #00000033;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    z-index: 5;
-    box-sizing: border-box;
-  }
-
-  .quick_view_btn img {
-    width: 8px;
-    height: 8px;
-    display: block;
-  }
-
-  /* =========================================
-   QUICK VIEW POPUP
-========================================= */
-
-.product_popup {
-  position: fixed;
-  width: 100%;
-  inset: 0;
-  left: 0%;
-  right: 0%;
-  height: 100%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-}
-
-.product_popup.is-open {
-  display: flex;
-}
-
-
-/* Overlay */
-
-.product_popup_overlay {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.35);
-}
-
-
-/* Popup Card */
-
-.product_popup_card {
-  position: relative;
-  width: min(700px, calc(100% - 40px));
-  max-height: calc(100vh - 40px);
-  background: #ffffff;
-  z-index: 2;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-
-/* Close Button */
-
-.product_popup_close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  width: 24px;
-  height: 24px;
-
-  padding: 0;
-  border: 0;
-  background: transparent;
-
-  font-size: 22px;
-  font-weight: 300;
-  line-height: 24px;
-
-  cursor: pointer;
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-/* =========================================
-   POPUP CONTENT
-========================================= */
-
-.popup_product_content {
-  width: 100%;
-  background-color: #fff;
-  padding: 25px 20px;
-  position: relative;
-  max-width: 310px;
-}
-.close_popup{
-  width: max-content;
-    position: absolute;
-    top: 2%;
-    right: 2%;
-    cursor:pointer;
-}
-.image_with_info{
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  gap: 8px;
-}
-
-
-/* Product Image */
-
-.popup_product_image {
-  width: 100%;
-  height: 120px;
-}
-
-.popup_product_image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
-
-/* Product Title */
-
-.popup_product_title {
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 120%;
-  letter-spacing: 0px;
-  margin: 0 0 13px 0;
-}
-
-
-/* Price */
-
-.popup_product_price {
-  font-family: 'Lustria';
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 120%;
-  letter-spacing: 0px;
-  margin: 0 0 13px 0;
-  color: #000;
-}
-
-
-/* Description */
-
-.popup_product_description {
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 110%;
-  letter-spacing: -1%;
-  color: #000;
-}
-
-
-/* =========================================
-   OPTIONS
-========================================= */
-
-.popup_product_option {
-  margin-bottom: 14px;
-}
-
-.popup_option_label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  font-size: 11px;
-  line-height: 1.2;
-}
-
-
-/* Option Buttons */
-
-.popup_option_buttons {
-  display: flex;
-  width: 100%;
-}
-
-.popup_option_button {
-  flex: 1;
-
-  height: 40px;
-
-  padding: 0 10px;
-
-  border: 1px solid #999999;
-  background: #ffffff;
-
-  font-size: 16px;
-  font-weight: 400;
-
-  cursor: pointer;
-
-  margin-left: -1px;
-}
-
-.popup_option_button:first-child {
-  margin-left: 0;
-}
-
-.popup_option_button.is-selected {
-  border: 1px solid #000000;
-  background: #ffffff;
-  color: #000000;
-
-  position: relative;
-  z-index: 1;
-}
-
-
-/* Select */
-
-.popup_select_wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.popup_option_select {
-  appearance: none;
-  -webkit-appearance: none;
-
-  width: 100%;
-
-  padding: 0 32px 0 10px;
-
-  border: 1px solid #999999;
-  border-radius: 0;
-
-  background: #ffffff;
-
-  font-size: 16px;
-  height: 40px;
-
-  cursor: pointer;
-}
-
-.popup_select_arrow {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  font-size: 14px;
-  line-height: 1;
-
-  pointer-events: none;
-}
-
-
-/* =========================================
-   ADD TO CART
-========================================= */
-
-.popup_product_form {
-  width: 100%;
-}
-
-.popup_add_to_cart {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 100%;
-  width: 100%;
-  height: 40px;
-
-  margin-top: 50px;
-
-  padding: 0 16px;
-
-  border: 0;
-  border-radius: 0;
-
-  background: #000000;
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 400;
-
-  cursor: pointer;
-}
-
-
-.popup_add_to_cart:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.popup_add_to_cart_text {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-
-body.quick-view-open {
-  overflow: hidden;
-}
-  /* Mobile */
-  @media only screen and (max-width: 989px) {
-
-    {% if section.settings.section_padding_mobile != blank %}
-      .custom-featured-grid {
-        padding: {{ section.settings.section_padding_mobile }};
-      }
-    {% endif %}
-
-    .section_heading h2 {
-      font-size: 24px;
-      margin: 0 0 20px 0;
-      text-align: center;
-    }
-
-    /* 2 Products Per Row */
-    .custom-product-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .custom-product-grid-item {
-      width: 100%;
-    }
-
-    /* Mobile Image */
-    .grid_image {
-      width: 100%;
-      height: 186.42px;
-    }
-
-    .grid_image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Mobile Quick View Position */
-    .quick_view_btn {
-      top: var(--quick-top-mb);
-      bottom: var(--quick-bottom-mb);
-      left: var(--quick-left-mb);
-      right: var(--quick-right-mb);
-    }
-.popup_product_content{
- max-width: 310px;
-}
-
-    .product_popup {
-    padding: 12px;
-    max-width: 100%;
-    left: 0;
-    right: 0;
-    box-sizing: border-box;
-  }
-
-  .product_popup_card {
-    width: 100%;
-    max-width: 100%;
-    max-height: calc(100vh - 24px);
-
-    overflow-y: auto;
-  }
-
-  
-
-  .popup_product_title {
-    font-size: 12px;
-    margin-bottom: 8px;
-  }
-
-  .popup_product_price {
-    font-size: 12px;
-    margin-bottom: 12px;
-  }
-
-  .popup_product_description {
-    font-size: 8px;
-    line-height: 1.3;
-    margin-bottom: 16px;
-  }
-
-  .popup_product_option {
-    margin-bottom: 12px;
-  }
-
-  .popup_option_label {
-    font-size: 9px;
-    margin-bottom: 5px;
-  }
-
-  .popup_option_button {
-    height: 40px;
-    font-size: 16px;
-  }
-
-  .popup_add_to_cart {
-    margin-top: 22px;
-    padding: 0 10px;
-  }
-
-
-  .product_popup_close {
-    top: 6px;
-    right: 7px;
-
-    width: 18px;
-    height: 18px;
-
-    font-size: 17px;
-  }
-  }
-}
-</style>
-
-
-<div class="page-width custom-featured-grid">
-
-  {% if section.settings.section_heading != blank %}
-    <div class="section_heading">
-      <h2>{{ section.settings.section_heading }}</h2>
-    </div>
-  {% endif %}
-
-
-  <div class="custom-product-grid">
-
-    {% for block in section.blocks %}
-
-      {% if block.settings.product != blank %}
-
-        {% assign product = block.settings.product %}
-
+{% if section.settings.section_heading != blank %}
+  <div class="custom-featured-grid-heading">
+    {{ section.settings.section_heading }}
+  </div>
+{% endif %}
+
+<div
+  id="custom-featured-grid-{{ section.id }}"
+  class="custom-featured-grid"
+>
+  {% for block in section.blocks %}
+
+    {% if block.settings.product != blank %}
+
+      {% assign product = block.settings.product %}
+
+      <div
+        class="custom-product-grid-item"
+        style="
+          --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
+          --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
+          --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
+          --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
+
+          --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
+          --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
+          --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
+          --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
+        "
+        {{ block.shopify_attributes }}
+      >
+
+        <!-- PRODUCT IMAGE -->
+        <div class="grid_image">
+          {% if product.featured_image != blank %}
+            <img
+              src="{{ product.featured_image | image_url: width: 1200 }}"
+              alt="{{ product.featured_image.alt | default: product.title | escape }}"
+              loading="lazy"
+              width="{{ product.featured_image.width }}"
+              height="{{ product.featured_image.height }}"
+            >
+          {% endif %}
+        </div>
+
+
+        <!-- QUICK VIEW BUTTON -->
+        <button
+          type="button"
+          class="quick_view_btn"
+          id="quick_view_btn_{{ product.id }}_{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          data-popup-id="product-popup-{{ product.id }}-{{ section.id }}"
+          aria-label="Quick view {{ product.title | escape }}"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
+            alt="plus-icon"
+          >
+        </button>
+
+
+        <!-- PRODUCT POPUP -->
         <div
-          class="custom-product-grid-item"
-          style="
-            --quick-top: {% if block.settings.top > 0 %}{{ block.settings.top }}%{% else %}auto{% endif %};
-            --quick-bottom: {% if block.settings.bottom > 0 %}{{ block.settings.bottom }}%{% else %}auto{% endif %};
-            --quick-left: {% if block.settings.left > 0 %}{{ block.settings.left }}%{% else %}auto{% endif %};
-            --quick-right: {% if block.settings.right > 0 %}{{ block.settings.right }}%{% else %}auto{% endif %};
-
-            --quick-top-mb: {% if block.settings.top_mb > 0 %}{{ block.settings.top_mb }}%{% else %}auto{% endif %};
-            --quick-bottom-mb: {% if block.settings.bottom_mb > 0 %}{{ block.settings.bottom_mb }}%{% else %}auto{% endif %};
-            --quick-left-mb: {% if block.settings.left_mb > 0 %}{{ block.settings.left_mb }}%{% else %}auto{% endif %};
-            --quick-right-mb: {% if block.settings.right_mb > 0 %}{{ block.settings.right_mb }}%{% else %}auto{% endif %};
-          "
-          {{ block.shopify_attributes }}
+          class="product_popup"
+          id="product-popup-{{ product.id }}-{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          aria-hidden="true"
         >
 
-          <div class="grid_image">
-            <img
-              src="{{ product.featured_image | img_url: 'master' }}"
-              alt="{{ product.featured_image.alt | escape }}"
-              loading="lazy"
-            >
-          </div>
+          <div class="product_popup_inner">
 
-          <div class="quick_view_btn" id="quick_view_btn_{{ product.id }}" data-product-id="{{  product.id }}" aria-label="Quick view {{ product.title | escape }}">
-            <img
-              src="https://cdn.shopify.com/s/files/1/0740/2592/6742/files/plus-sign.svg?v=1786143487"
-              alt="plus-icon"
+            <!-- CLOSE BUTTON -->
+            <button
+              type="button"
+              class="product_popup_close"
+              aria-label="Close popup"
             >
-          </div>
-          <div class="product_popup" id="product-popup-{{  product.id }}" data-product-id="{{  product.id }}" aria-hidden="true">
-            {% render 'popup-card', product: product, section: section %}
+              ×
+            </button>
+
+            {% render 'popup-card',
+              product: product,
+              section: section
+            %}
+
           </div>
 
         </div>
 
-      {% endif %}
+      </div>
 
-    {% endfor %}
+    {% endif %}
 
-  </div>
-
+  {% endfor %}
 </div>
+
+
 <script>
 (function () {
 
-  function initPopupVariants() {
+  'use strict';
 
-    const forms = document.querySelectorAll('.popup_product_form');
 
-    forms.forEach(function (form) {
+  /*
+   * ============================================================
+   * POPUP SYSTEM
+   * ============================================================
+   */
 
-      if (form.dataset.variantHandlerInitialized === 'true') {
+  function initPopupSystem(scope) {
+
+    scope = scope || document;
+
+    /*
+     * ------------------------------------------------------------
+     * OPEN POPUP
+     * ------------------------------------------------------------
+     */
+
+    scope.querySelectorAll('.quick_view_btn').forEach(function (button) {
+
+      if (button.dataset.popupOpenInitialized === 'true') {
         return;
       }
 
-      form.dataset.variantHandlerInitialized = 'true';
+      button.dataset.popupOpenInitialized = 'true';
 
-      const popup = form.closest('.product_popup');
 
-      if (!popup) {
-        return;
-      }
+      button.addEventListener('click', function (event) {
 
-      const variantInput =
-        form.querySelector('.popup_variant_id');
+        event.preventDefault();
+        event.stopPropagation();
 
-      const addToCartButton =
-        form.querySelector('.popup_add_to_cart');
 
-      const variantJson =
-        popup.querySelector('.popup-product-variants');
+        var popupId = button.getAttribute('data-popup-id');
 
-      if (!variantInput || !variantJson) {
-        return;
-      }
+        if (!popupId) {
+          return;
+        }
 
-      let variants = [];
 
-      try {
-        variants = JSON.parse(
-          variantJson.textContent
+        var popup = document.getElementById(popupId);
+
+        if (!popup) {
+          console.error(
+            'Popup not found:',
+            popupId
+          );
+
+          return;
+        }
+
+
+        /*
+         * Close any other popup first.
+         */
+        document.querySelectorAll('.product_popup').forEach(function (item) {
+
+          if (item !== popup) {
+
+            item.setAttribute(
+              'aria-hidden',
+              'true'
+            );
+
+            item.classList.remove(
+              'active',
+              'is-open',
+              'open'
+            );
+
+          }
+
+        });
+
+
+        /*
+         * Open current popup.
+         */
+        popup.setAttribute(
+          'aria-hidden',
+          'false'
         );
-      } catch (error) {
-        console.error(
-          'Unable to read product variants:',
-          error
+
+        popup.classList.add(
+          'active',
+          'is-open',
+          'open'
         );
+
+
+        /*
+         * Initialize variants for this popup.
+         */
+        initPopupProductForms(popup);
+
+      });
+
+    });
+
+
+    /*
+     * ------------------------------------------------------------
+     * CLOSE BUTTON
+     * ------------------------------------------------------------
+     */
+
+    scope.querySelectorAll('.product_popup_close').forEach(function (button) {
+
+      if (button.dataset.popupCloseInitialized === 'true') {
+        return;
+      }
+
+      button.dataset.popupCloseInitialized = 'true';
+
+
+      button.addEventListener('click', function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+
+        var popup = button.closest('.product_popup');
+
+        if (!popup) {
+          return;
+        }
+
+
+        closePopup(popup);
+
+      });
+
+    });
+
+
+    /*
+     * ------------------------------------------------------------
+     * CLICK OUTSIDE POPUP CONTENT
+     * ------------------------------------------------------------
+     */
+
+    scope.querySelectorAll('.product_popup').forEach(function (popup) {
+
+      if (popup.dataset.popupBackdropInitialized === 'true') {
+        return;
+      }
+
+      popup.dataset.popupBackdropInitialized = 'true';
+
+
+      popup.addEventListener('click', function (event) {
+
+        if (event.target === popup) {
+          closePopup(popup);
+        }
+
+      });
+
+    });
+
+  }
+
+
+  function closePopup(popup) {
+
+    if (!popup) {
+      return;
+    }
+
+
+    popup.setAttribute(
+      'aria-hidden',
+      'true'
+    );
+
+
+    popup.classList.remove(
+      'active',
+      'is-open',
+      'open'
+    );
+
+  }
+
+
+  /*
+   * ============================================================
+   * ESC KEY
+   * ============================================================
+   */
+
+  function initEscapeKey() {
+
+    if (window.customFeaturedPopupEscapeInitialized) {
+      return;
+    }
+
+    window.customFeaturedPopupEscapeInitialized = true;
+
+
+    document.addEventListener('keydown', function (event) {
+
+      if (event.key !== 'Escape') {
+        return;
+      }
+
+
+      document.querySelectorAll(
+        '.product_popup[aria-hidden="false"]'
+      ).forEach(function (popup) {
+
+        closePopup(popup);
+
+      });
+
+    });
+
+  }
+
+
+  /*
+   * ============================================================
+   * POPUP PRODUCT VARIANTS
+   * ============================================================
+   */
+
+  function initPopupProductForms(scope) {
+
+    scope = scope || document;
+
+
+    /*
+     * If scope itself is a popup, use it.
+     * Otherwise find all popups inside scope.
+     */
+
+    var popups = [];
+
+    if (
+      scope.classList &&
+      scope.classList.contains('product_popup')
+    ) {
+
+      popups = [scope];
+
+    } else {
+
+      popups = Array.from(
+        scope.querySelectorAll('.product_popup')
+      );
+
+    }
+
+
+    popups.forEach(function (popup) {
+
+      var form =
+        popup.querySelector('.popup_product_form');
+
+
+      if (!form) {
         return;
       }
 
 
       /*
-       * ----------------------------------------------------
+       * Prevent duplicate initialization.
+       */
+
+      if (
+        form.dataset.variantHandlerInitialized ===
+        'true'
+      ) {
+        return;
+      }
+
+
+      form.dataset.variantHandlerInitialized =
+        'true';
+
+
+      /*
+       * ----------------------------------------------------------
+       * ELEMENTS
+       * ----------------------------------------------------------
+       */
+
+      var variantInput =
+        form.querySelector('.popup_variant_id');
+
+
+      var addToCartButton =
+        form.querySelector('.popup_add_to_cart');
+
+
+      var variantJson =
+        popup.querySelector(
+          '.popup-product-variants'
+        );
+
+
+      if (!variantInput) {
+
+        console.error(
+          'Popup variant input not found.',
+          popup
+        );
+
+        return;
+
+      }
+
+
+      if (!variantJson) {
+
+        console.error(
+          'Popup variant JSON not found.',
+          popup
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * ----------------------------------------------------------
+       * READ PRODUCT VARIANTS
+       * ----------------------------------------------------------
+       */
+
+      var variants = [];
+
+
+      try {
+
+        variants =
+          JSON.parse(
+            variantJson.textContent
+          );
+
+      } catch (error) {
+
+        console.error(
+          'Unable to parse product variants:',
+          error
+        );
+
+        return;
+
+      }
+
+
+      if (!Array.isArray(variants)) {
+
+        console.error(
+          'Product variants JSON is not an array.',
+          variants
+        );
+
+        return;
+
+      }
+
+
+      /*
+       * ----------------------------------------------------------
        * GET SELECTED OPTIONS
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
        */
 
       function getSelectedOptions() {
 
-        const options = [];
+        var options = [];
+
 
         /*
-         * Select fields
+         * SELECT DROPDOWNS
          */
+
         form.querySelectorAll(
           '.popup_option_select'
         ).forEach(function (select) {
 
-          const index =
+          var index =
             parseInt(
               select.dataset.optionIndex,
               10
             );
 
-          options[index] = select.value;
+
+          if (!isNaN(index)) {
+
+            options[index] =
+              String(select.value);
+
+          }
 
         });
 
 
         /*
-         * Button options
+         * BUTTON OPTIONS
          */
+
         form.querySelectorAll(
           '.popup_option_button.is-selected'
         ).forEach(function (button) {
 
-          const index =
+          var index =
             parseInt(
               button.dataset.optionIndex,
               10
             );
 
-          options[index] =
-            button.dataset.optionValue;
+
+          if (!isNaN(index)) {
+
+            options[index] =
+              String(
+                button.dataset.optionValue
+              );
+
+          }
 
         });
 
 
         return options;
+
       }
 
 
       /*
-       * ----------------------------------------------------
-       * FIND EXACT VARIANT
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
+       * FIND EXACT PRODUCT VARIANT
+       * ----------------------------------------------------------
        */
 
       function findVariant(options) {
+
+        if (!options || !options.length) {
+          return null;
+        }
+
 
         return variants.find(function (variant) {
 
           if (!variant.options) {
             return false;
           }
+
 
           if (
             variant.options.length !==
@@ -732,32 +560,65 @@ body.quick-view-open {
             return false;
           }
 
-          return variant.options.every(
-            function (value, index) {
 
-              return String(value) ===
-                String(options[index]);
+          return variant.options.every(
+            function (variantValue, index) {
+
+              return (
+                String(variantValue).trim() ===
+                String(options[index]).trim()
+              );
 
             }
           );
 
-        });
+        }) || null;
 
       }
 
 
       /*
-       * ----------------------------------------------------
-       * UPDATE SELECTED VARIANT
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
+       * UPDATE CURRENT VARIANT
+       * ----------------------------------------------------------
        */
 
       function updateVariant() {
 
-        const options =
+        var options =
           getSelectedOptions();
 
-        const variant =
+
+        /*
+         * Do not search until every option
+         * has a selected value.
+         */
+
+        var optionCount =
+          form.querySelectorAll(
+            '.popup_product_option'
+          ).length;
+
+
+        if (
+          optionCount &&
+          options.length !== optionCount
+        ) {
+
+          variantInput.value = '';
+
+
+          if (addToCartButton) {
+            addToCartButton.disabled = true;
+          }
+
+
+          return null;
+
+        }
+
+
+        var variant =
           findVariant(options);
 
 
@@ -765,42 +626,63 @@ body.quick-view-open {
 
           variantInput.value = '';
 
+
           if (addToCartButton) {
+
             addToCartButton.disabled = true;
+
+
+            var unavailableText =
+              addToCartButton.querySelector(
+                '.popup_add_to_cart_text'
+              );
+
+
+            if (unavailableText) {
+              unavailableText.textContent =
+                'UNAVAILABLE';
+            }
+
           }
 
+
           console.warn(
-            'No variant found:',
+            'No matching variant found:',
             options
           );
 
-          return;
+
+          return null;
+
         }
 
 
         /*
-         * IMPORTANT
+         * THIS IS THE IMPORTANT PART.
          *
-         * This updates the actual Shopify
-         * variant ID.
+         * The actual selected Shopify variant ID
+         * is written into the hidden input.
          */
+
         variantInput.value =
           variant.id;
 
 
         /*
-         * Save options for Add To Cart
+         * Store selected options.
          */
+
         form.dataset.selectedOptions =
           JSON.stringify(options);
 
 
         /*
-         * Update availability
+         * Update availability.
          */
+
         if (addToCartButton) {
 
-          const text =
+          var buttonText =
             addToCartButton.querySelector(
               '.popup_add_to_cart_text'
             );
@@ -810,9 +692,10 @@ body.quick-view-open {
 
             addToCartButton.disabled = false;
 
-            if (text) {
 
-              text.innerHTML =
+            if (buttonText) {
+
+              buttonText.innerHTML =
                 'ADD TO CART <span class="popup_add_to_cart_arrow">&xrarr;</span>';
 
             }
@@ -821,8 +704,10 @@ body.quick-view-open {
 
             addToCartButton.disabled = true;
 
-            if (text) {
-              text.textContent = 'SOLD OUT';
+
+            if (buttonText) {
+              buttonText.textContent =
+                'SOLD OUT';
             }
 
           }
@@ -830,19 +715,47 @@ body.quick-view-open {
         }
 
 
+        /*
+         * Update price if price data exists.
+         */
+
+        var priceElement =
+          popup.querySelector(
+            '.popup_product_price'
+          );
+
+
+        if (
+          priceElement &&
+          variant.price_formatted
+        ) {
+
+          priceElement.innerHTML =
+            variant.price_formatted;
+
+        }
+
+
+        /*
+         * Debugging.
+         */
+
         console.log(
-          'Selected variant:',
+          '[Popup] Selected variant:',
           variant.id,
-          options
+          variant.options
         );
+
+
+        return variant;
 
       }
 
 
       /*
-       * ----------------------------------------------------
-       * SELECT DROPDOWN
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
+       * SELECT CHANGE
+       * ----------------------------------------------------------
        */
 
       form.querySelectorAll(
@@ -862,9 +775,9 @@ body.quick-view-open {
 
 
       /*
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
        * OPTION BUTTONS
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
        */
 
       form.querySelectorAll(
@@ -873,23 +786,27 @@ body.quick-view-open {
 
         button.addEventListener(
           'click',
-          function () {
+          function (event) {
 
-            const optionIndex =
+            event.preventDefault();
+
+
+            var optionIndex =
               button.dataset.optionIndex;
 
 
             /*
-             * Remove selected state only
-             * from the same option group.
+             * Remove selection only from
+             * the same option group.
              */
+
             form.querySelectorAll(
               '.popup_option_button[data-option-index="' +
               optionIndex +
               '"]'
-            ).forEach(function (item) {
+            ).forEach(function (otherButton) {
 
-              item.classList.remove(
+              otherButton.classList.remove(
                 'is-selected'
               );
 
@@ -897,8 +814,9 @@ body.quick-view-open {
 
 
             /*
-             * Select clicked button
+             * Select clicked value.
              */
+
             button.classList.add(
               'is-selected'
             );
@@ -913,156 +831,334 @@ body.quick-view-open {
 
 
       /*
-       * ----------------------------------------------------
-       * INITIAL VARIANT
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
+       * AUTOMATIC PRODUCT DATA
+       * ----------------------------------------------------------
        */
 
-      updateVariant();
+      function getAutomaticProduct() {
+
+        var element =
+          popup.querySelector(
+            '.popup-auto-product-data'
+          );
+
+
+        if (!element) {
+          return null;
+        }
+
+
+        try {
+
+          return JSON.parse(
+            element.textContent
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Unable to parse automatic product data:',
+            error
+          );
+
+
+          return null;
+
+        }
+
+      }
 
 
       /*
-       * ----------------------------------------------------
-       * ADD TO CART
-       * ----------------------------------------------------
+       * ----------------------------------------------------------
+       * FIND AUTOMATIC PRODUCT VARIANT
+       *
+       * REQUIRED:
+       *
+       * Black + Medium
+       *
+       * This does NOT use:
+       *
+       * selected_or_first_available_variant
+       *
+       * It searches the actual variants.
+       * ----------------------------------------------------------
        */
 
-      form.addEventListener(
-        'submit',
-        async function (event) {
+      function findAutoVariant(autoProduct) {
 
-          event.preventDefault();
+        if (
+          !autoProduct ||
+          !Array.isArray(autoProduct.variants)
+        ) {
 
+          return null;
 
-          if (
-            form.dataset.submitting === 'true'
-          ) {
-            return;
-          }
+        }
 
 
-          const options =
-            getSelectedOptions();
+        /*
+         * Find a variant containing BOTH:
+         *
+         * Medium
+         * Black
+         */
 
+        var matchingVariant =
+          autoProduct.variants.find(
+            function (variant) {
 
-          const selectedVariant =
-            findVariant(options);
+              if (
+                !variant ||
+                !Array.isArray(variant.options)
+              ) {
 
+                return false;
 
-          if (!selectedVariant) {
-
-            alert(
-              'Please select a valid product variant.'
-            );
-
-            return;
-          }
-
-
-          /*
-           * Make sure hidden input has
-           * the correct variant.
-           */
-          variantInput.value =
-            selectedVariant.id;
-
-
-          form.dataset.submitting =
-            'true';
-
-
-          if (addToCartButton) {
-            addToCartButton.disabled = true;
-          }
-
-
-          try {
-
-            /*
-             * Start with the selected product.
-             */
-            const cartItems = [
-              {
-                id: Number(
-                  selectedVariant.id
-                ),
-                quantity: 1
               }
-            ];
+
+
+              var normalizedValues =
+                variant.options.map(
+                  function (value) {
+
+                    return String(value)
+                      .trim()
+                      .toLowerCase();
+
+                  }
+                );
+
+
+              var hasMedium =
+                normalizedValues.includes(
+                  'medium'
+                );
+
+
+              var hasBlack =
+                normalizedValues.includes(
+                  'black'
+                );
+
+
+              return (
+                hasMedium &&
+                hasBlack
+              );
+
+            }
+          );
+
+
+        if (matchingVariant) {
+
+          console.log(
+            '[Popup] Automatic product variant found:',
+            matchingVariant.id,
+            matchingVariant.options
+          );
+
+        }
+
+
+        return matchingVariant || null;
+
+      }
+
+
+      /*
+       * ----------------------------------------------------------
+       * ADD TO CART
+       * ----------------------------------------------------------
+       */
+
+      if (
+        form.dataset.submitHandlerInitialized !==
+        'true'
+      ) {
+
+        form.dataset.submitHandlerInitialized =
+          'true';
+
+
+        form.addEventListener(
+          'submit',
+          async function (event) {
+
+            event.preventDefault();
 
 
             /*
-             * ------------------------------------------------
-             * AUTOMATIC PRODUCT
-             * ------------------------------------------------
+             * Prevent double submission.
              */
 
-            const autoProductJson =
-              popup.querySelector(
-                '.popup-auto-product-data'
+            if (
+              form.dataset.submitting ===
+              'true'
+            ) {
+
+              return;
+
+            }
+
+
+            /*
+             * Get current options.
+             */
+
+            var selectedOptions =
+              getSelectedOptions();
+
+
+            /*
+             * Find exact selected product variant.
+             */
+
+            var selectedVariant =
+              findVariant(
+                selectedOptions
               );
 
 
-            if (autoProductJson) {
+            if (!selectedVariant) {
 
-              let autoProduct = null;
+              alert(
+                'Please select a valid product variant.'
+              );
 
-              try {
+              return;
 
-                autoProduct =
-                  JSON.parse(
-                    autoProductJson.textContent
-                  );
+            }
 
-              } catch (error) {
 
-                console.error(
-                  'Automatic product JSON error:',
-                  error
-                );
+            /*
+             * Make absolutely sure hidden input
+             * contains the selected variant ID.
+             */
 
-              }
+            variantInput.value =
+              selectedVariant.id;
+
+
+            /*
+             * Check availability.
+             */
+
+            if (!selectedVariant.available) {
+
+              alert(
+                'This variant is currently sold out.'
+              );
+
+              return;
+
+            }
+
+
+            form.dataset.submitting =
+              'true';
+
+
+            if (addToCartButton) {
+              addToCartButton.disabled = true;
+            }
+
+
+            try {
+
+              /*
+               * ------------------------------------------------
+               * MAIN PRODUCT
+               * ------------------------------------------------
+               */
+
+              var cartItems = [
+
+                {
+                  id: Number(
+                    selectedVariant.id
+                  ),
+
+                  quantity: 1
+
+                }
+
+              ];
+
+
+              /*
+               * ------------------------------------------------
+               * AUTOMATIC PRODUCT
+               * ------------------------------------------------
+               */
+
+              var autoProduct =
+                getAutomaticProduct();
 
 
               if (autoProduct) {
 
                 /*
-                 * Check Black
+                 * Check whether current product has
+                 * Black selected.
                  */
-                const hasBlack =
-                  options.some(function (value) {
 
-                    return String(value)
-                      .trim()
-                      .toLowerCase() ===
-                      'black';
+                var hasBlack =
+                  selectedOptions.some(
+                    function (value) {
 
-                  });
+                      return String(value)
+                        .trim()
+                        .toLowerCase() ===
+                        'black';
+
+                    }
+                  );
 
 
                 /*
-                 * Check Medium
+                 * Check whether current product has
+                 * Medium selected.
                  */
-                const hasMedium =
-                  options.some(function (value) {
 
-                    return String(value)
-                      .trim()
-                      .toLowerCase() ===
-                      'medium';
+                var hasMedium =
+                  selectedOptions.some(
+                    function (value) {
 
-                  });
+                      return String(value)
+                        .trim()
+                        .toLowerCase() ===
+                        'medium';
+
+                    }
+                  );
+
+
+                console.log(
+                  '[Popup] Automatic product condition:',
+                  {
+                    hasBlack: hasBlack,
+                    hasMedium: hasMedium,
+                    selectedOptions:
+                      selectedOptions
+                  }
+                );
 
 
                 /*
-                 * Only Black + Medium
+                 * ONLY add Soft Winter Jacket when:
+                 *
+                 * Black + Medium
                  */
+
                 if (
                   hasBlack &&
                   hasMedium
                 ) {
 
-                  const autoVariant =
+                  var autoVariant =
                     findAutoVariant(
                       autoProduct
                     );
@@ -1071,30 +1167,42 @@ body.quick-view-open {
                   if (autoVariant) {
 
                     /*
-                     * Add the exact M + Black
-                     * Soft Winter Jacket variant.
+                     * Don't add the same product
+                     * twice.
                      */
-                    cartItems.push({
 
-                      id: Number(
-                        autoVariant.id
-                      ),
+                    if (
+                      Number(
+                        autoProduct.productId
+                      ) !==
+                      Number(
+                        selectedVariant.product_id
+                      )
+                    ) {
 
-                      quantity: 1
+                      cartItems.push({
 
-                    });
+                        id: Number(
+                          autoVariant.id
+                        ),
+
+                        quantity: 1
+
+                      });
 
 
-                    console.log(
-                      'Automatic product variant:',
-                      autoVariant.id,
-                      autoVariant.options
-                    );
+                      console.log(
+                        '[Popup] Adding automatic product:',
+                        autoVariant.id,
+                        autoVariant.options
+                      );
+
+                    }
 
                   } else {
 
                     console.warn(
-                      'Black + Medium selected, but matching automatic product variant was not found.'
+                      '[Popup] Black + Medium selected, but no Black + Medium variant exists on the automatic product.'
                     );
 
                   }
@@ -1103,107 +1211,189 @@ body.quick-view-open {
 
               }
 
-            }
 
+              /*
+               * ------------------------------------------------
+               * ADD ALL ITEMS
+               * ------------------------------------------------
+               */
 
-            /*
-             * ------------------------------------------------
-             * SHOPIFY AJAX CART
-             * ------------------------------------------------
-             */
-
-            const response =
-              await fetch(
-                window.Shopify.routes.root +
-                'cart/add.js',
-                {
-                  method: 'POST',
-
-                  headers: {
-                    'Content-Type':
-                      'application/json',
-
-                    'Accept':
-                      'application/json'
-                  },
-
-                  body: JSON.stringify({
-                    items: cartItems
-                  })
-                }
+              console.log(
+                '[Popup] Final cart items:',
+                cartItems
               );
 
 
-            const data =
-              await response.json();
+              var response =
+                await fetch(
+                  window.Shopify.routes.root +
+                  'cart/add.js',
+                  {
+
+                    method: 'POST',
+
+                    headers: {
+
+                      'Content-Type':
+                        'application/json',
+
+                      'Accept':
+                        'application/json'
+
+                    },
+
+                    body:
+                      JSON.stringify({
+                        items:
+                          cartItems
+                      })
+
+                  }
+                );
 
 
-            if (!response.ok) {
+              var data =
+                await response.json();
 
-              throw new Error(
-                data.description ||
-                data.message ||
+
+              if (!response.ok) {
+
+                throw new Error(
+                  data.description ||
+                  data.message ||
+                  'Unable to add product to cart.'
+                );
+
+              }
+
+
+              console.log(
+                '[Popup] Added to cart:',
+                data
+              );
+
+
+              /*
+               * Let the Shopify theme update
+               * its cart UI.
+               */
+
+              document.dispatchEvent(
+                new CustomEvent(
+                  'cart:updated'
+                )
+              );
+
+
+              document.dispatchEvent(
+                new CustomEvent(
+                  'cart:refresh'
+                )
+              );
+
+
+              document.dispatchEvent(
+                new CustomEvent(
+                  'ajaxProduct:added'
+                )
+              );
+
+
+              /*
+               * Try to update cart drawer.
+               */
+
+              var cartDrawer =
+                document.querySelector(
+                  'cart-drawer'
+                );
+
+
+              if (
+                cartDrawer &&
+                typeof cartDrawer.renderContents ===
+                'function'
+              ) {
+
+                try {
+
+                  var cartResponse =
+                    await fetch(
+                      window.Shopify.routes.root +
+                      'cart.js'
+                    );
+
+
+                  var cart =
+                    await cartResponse.json();
+
+
+                  cartDrawer.renderContents(
+                    cart
+                  );
+
+                } catch (drawerError) {
+
+                  console.warn(
+                    '[Popup] Cart drawer refresh failed:',
+                    drawerError
+                  );
+
+                }
+
+              }
+
+
+              /*
+               * Close popup after successful
+               * add to cart.
+               */
+
+              closePopup(popup);
+
+
+            } catch (error) {
+
+              console.error(
+                '[Popup] Add to cart error:',
+                error
+              );
+
+
+              alert(
+                error.message ||
                 'Unable to add product to cart.'
               );
 
+
+            } finally {
+
+              form.dataset.submitting =
+                'false';
+
+
+              /*
+               * Recalculate selected variant
+               * and restore button state.
+               */
+
+              updateVariant();
+
             }
 
-
-            console.log(
-              'Added to cart:',
-              data
-            );
-
-
-            /*
-             * IMPORTANT:
-             *
-             * We DO NOT:
-             *
-             * - close popup
-             * - remove popup classes
-             * - dispatch cart:refresh
-             * - dispatch cart:updated
-             * - dispatch ajaxProduct:added
-             *
-             * Your existing theme handles those.
-             */
-
-
-            /*
-             * Reset submitting state
-             */
-            form.dataset.submitting =
-              'false';
-
-
-            updateVariant();
-
-
-          } catch (error) {
-
-            console.error(
-              'Add to cart error:',
-              error
-            );
-
-
-            alert(
-              error.message ||
-              'Unable to add product to cart.'
-            );
-
-
-            form.dataset.submitting =
-              'false';
-
-
-            updateVariant();
-
           }
+        );
 
-        }
-      );
+      }
+
+
+      /*
+       * ----------------------------------------------------------
+       * INITIAL VARIANT
+       * ----------------------------------------------------------
+       */
+
+      updateVariant();
 
     });
 
@@ -1211,179 +1401,27 @@ body.quick-view-open {
 
 
   /*
-   * ----------------------------------------------------
-   * FIND AUTOMATIC PRODUCT VARIANT
-   * ----------------------------------------------------
+   * ============================================================
+   * INITIALIZE
+   * ============================================================
    */
 
-  function findAutoVariant(autoProduct) {
+  function initialize() {
 
-    if (
-      !autoProduct ||
-      !autoProduct.variants
-    ) {
-      return null;
-    }
-
+    initPopupSystem(
+      document
+    );
 
     /*
-     * First try exact option-name matching.
-     *
-     * Example:
-     *
-     * Size = Medium
-     * Color = Black
+     * Initialize all forms immediately.
      */
-    if (
-      autoProduct.options &&
-      autoProduct.options.length
-    ) {
 
-      const variant =
-        autoProduct.variants.find(
-          function (variant) {
+    initPopupProductForms(
+      document
+    );
 
-            if (!variant.options) {
-              return false;
-            }
+    initEscapeKey();
 
-
-            let hasMedium = false;
-            let hasBlack = false;
-
-
-            variant.options.forEach(
-              function (value) {
-
-                const normalized =
-                  String(value)
-                    .trim()
-                    .toLowerCase();
-
-
-                if (
-                  normalized ===
-                  'medium'
-                ) {
-                  hasMedium = true;
-                }
-
-
-                if (
-                  normalized ===
-                  'black'
-                ) {
-                  hasBlack = true;
-                }
-
-              }
-            );
-
-
-            return (
-              hasMedium &&
-              hasBlack
-            );
-
-          }
-        );
-
-
-      if (variant) {
-        return variant;
-      }
-
-    }
-
-
-    return null;
-
-  }
-
-
-  /*
-   * ----------------------------------------------------
-   * INITIALIZE
-   * ----------------------------------------------------
-   */
-
-  function initializePopupVariants() {
-    initPopupVariants();
-  }
-
-
-  function initPopupVariants() {
-    initPopupVariantsHandler();
-  }
-
-
-  function initPopupVariantsHandler() {
-    initPopupVariantsCode();
-  }
-
-
-  function initPopupVariantsCode() {
-    initPopupVariantsMain();
-  }
-
-
-  function initPopupVariantsMain() {
-    initPopupVariantsReal();
-  }
-
-
-  function initPopupVariantsReal() {
-    initPopupVariantsFinal();
-  }
-
-
-  function initPopupVariantsFinal() {
-    initPopupVariantsActual();
-  }
-
-
-  function initPopupVariantsActual() {
-    initPopupVariantsProcess();
-  }
-
-
-  function initPopupVariantsProcess() {
-    initPopupVariantsNow();
-  }
-
-
-  function initPopupVariantsNow() {
-    initPopupVariantsSafe();
-  }
-
-
-  function initPopupVariantsSafe() {
-    initPopupVariantsDirect();
-  }
-
-
-  function initPopupVariantsDirect() {
-    initPopupVariantsCore();
-  }
-
-
-  function initPopupVariantsCore() {
-    initPopupVariantsInternal();
-  }
-
-
-  function initPopupVariantsInternal() {
-    initPopupVariantsExecution();
-  }
-
-
-  function initPopupVariantsExecution() {
-    initPopupVariantsFunction();
-  }
-
-
-  function initPopupVariantsFunction() {
-    initPopupVariants();
   }
 
 
@@ -1394,12 +1432,12 @@ body.quick-view-open {
 
     document.addEventListener(
       'DOMContentLoaded',
-      initPopupProductForms
+      initialize
     );
 
   } else {
 
-    initPopupProductForms();
+    initialize();
 
   }
 
@@ -1407,17 +1445,31 @@ body.quick-view-open {
   /*
    * Shopify Theme Editor
    */
+
   document.addEventListener(
     'shopify:section:load',
-    function () {
+    function (event) {
 
-      initPopupProductForms();
+      var sectionElement =
+        event.target;
+
+
+      initPopupSystem(
+        sectionElement
+      );
+
+
+      initPopupProductForms(
+        sectionElement
+      );
 
     }
   );
 
+
 })();
 </script>
+
 
 {% schema %}
 {
@@ -1501,7 +1553,6 @@ body.quick-view-open {
           "default": 0,
           "unit": "%"
         },
-
         {
           "type": "header",
           "content": "Quick View Icon Position - Mobile"
@@ -1556,4 +1607,3 @@ body.quick-view-open {
   ]
 }
 {% endschema %}
-
