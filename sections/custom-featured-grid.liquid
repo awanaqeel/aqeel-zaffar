@@ -1,4 +1,5 @@
 <style>
+  #shopify-section-{{ section.id }}{
   {% if section.settings.section_padding_desktop != blank %}
     .custom-featured-grid {
       padding: {{ section.settings.section_padding_desktop }};
@@ -550,6 +551,7 @@ body.quick-view-open {
     font-size: 17px;
   }
   }
+}
 </style>
 
 
