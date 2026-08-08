@@ -1,54 +1,32 @@
 {% assign auto_product = section.settings.select_product %}
 
-<!-- ============================================================
-     POPUP PRODUCT INFORMATION
-============================================================ -->
-
 <div class="popup_product_info">
-
-  <!-- PRODUCT TITLE -->
 
   <h3 class="popup_product_title">
     {{ product.title }}
   </h3>
 
-
-  <!-- PRODUCT PRICE -->
-
   <div
     class="popup_product_price"
-    data-product-price
+    data-original-price="{{ product.selected_or_first_available_variant.price }}"
   >
     {{ product.selected_or_first_available_variant.price | money }}
   </div>
 
-
-  <!-- PRODUCT DESCRIPTION -->
-
   {% if product.description != blank %}
-
     <div class="popup_product_description">
       {{ product.description | strip_html | truncatewords: 30 }}
     </div>
-
   {% endif %}
 
 </div>
 
 
-<!-- ============================================================
-     PRODUCT FORM
-============================================================ -->
-
 {% form 'product',
   product,
-  class: 'popup_product_form'
+  class: 'popup_product_form',
+  data-product-id: product.id
 %}
-
-
-  <!-- ==========================================================
-       CURRENT PRODUCT VARIANT ID
-  =========================================================== -->
 
   <input
     type="hidden"
@@ -57,10 +35,6 @@
     value="{{ product.selected_or_first_available_variant.id }}"
   >
 
-
-  <!-- ==========================================================
-       PRODUCT OPTIONS
-  =========================================================== -->
 
   {% unless product.has_only_default_variant %}
 
@@ -71,16 +45,13 @@
         <div
           class="popup_product_option"
           data-option-index="{{ forloop.index0 }}"
+          data-option-name="{{ option.name | escape }}"
         >
 
           <label class="popup_option_label">
             {{ option.name }}
           </label>
 
-
-          <!-- ==================================================
-               FIRST OPTION = SELECT
-          =================================================== -->
 
           {% if forloop.first %}
 
@@ -106,17 +77,12 @@
 
               </select>
 
-
               <span class="popup_select_arrow">
                 ↓
               </span>
 
             </div>
 
-
-          <!-- ==================================================
-               OTHER OPTIONS = BUTTONS
-          =================================================== -->
 
           {% else %}
 
@@ -126,7 +92,12 @@
 
                 <button
                   type="button"
-                  class="popup_option_button {% if option.selected_value == value %}is-selected{% endif %}"
+                  class="
+                    popup_option_button
+                    {% if option.selected_value == value %}
+                      is-selected
+                    {% endif %}
+                  "
                   data-option-value="{{ value | escape }}"
                   data-option-index="{{ forloop.parentloop.index0 }}"
                   style="border-left: 4px solid {{ value }}"
@@ -148,10 +119,6 @@
 
   {% endunless %}
 
-
-  <!-- ==========================================================
-       ADD TO CART
-  =========================================================== -->
 
   <button
     type="submit"
@@ -182,15 +149,14 @@
 
   </button>
 
-
 {% endform %}
 
 
-<!-- ============================================================
-     CURRENT PRODUCT VARIANT JSON
-     
-     JavaScript reads this instead of guessing the variant.
-============================================================ -->
+<!--
+  ============================================================
+  CURRENT PRODUCT VARIANTS
+  ============================================================
+-->
 
 <script
   type="application/json"
@@ -198,31 +164,24 @@
 >
 [
   {% for variant in product.variants %}
-
     {
       "id": {{ variant.id | json }},
-      "product_id": {{ variant.product_id | json }},
+      "product_id": {{ product.id | json }},
       "available": {{ variant.available | json }},
       "price": {{ variant.price | json }},
-      "price_formatted": {{ variant.price | money | json }},
-      "options": {{ variant.options | json }}
+      "options": {{ variant.options | json }},
+      "title": {{ variant.title | json }}
     }{% unless forloop.last %},{% endunless %}
-
   {% endfor %}
 ]
 </script>
 
 
-<!-- ============================================================
-     AUTOMATIC PRODUCT DATA
-     
-     This is the important part for:
-     
-     BLACK + MEDIUM
-     
-     -> Soft Winter Jacket
-     -> exact Black + Medium variant
-============================================================ -->
+<!--
+  ============================================================
+  AUTOMATIC PRODUCT
+  ============================================================
+-->
 
 {% if auto_product != blank %}
 
@@ -231,23 +190,20 @@
     class="popup-auto-product-data"
   >
   {
-    "productId": {{ auto_product.id | json }},
-    "productTitle": {{ auto_product.title | json }},
+    "product_id": {{ auto_product.id | json }},
+    "title": {{ auto_product.title | json }},
     "options": {{ auto_product.options | json }},
     "variants": [
-
       {% for variant in auto_product.variants %}
-
         {
           "id": {{ variant.id | json }},
-          "product_id": {{ variant.product_id | json }},
+          "product_id": {{ auto_product.id | json }},
           "available": {{ variant.available | json }},
           "price": {{ variant.price | json }},
-          "options": {{ variant.options | json }}
+          "options": {{ variant.options | json }},
+          "title": {{ variant.title | json }}
         }{% unless forloop.last %},{% endunless %}
-
       {% endfor %}
-
     ]
   }
   </script>
