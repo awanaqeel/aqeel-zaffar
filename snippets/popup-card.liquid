@@ -58,7 +58,11 @@
                   <button
                     type="button"
                     class="popup_option_button{% if option.selected_value == value %} is-selected{% endif %}{% if value == 'White' %} has-shadow-border{% endif %}"
+                    {%  if value == 'white' %}
+                    style="border-left: 4px solid #f7f7f7;"
+                    {% else %}
                     style="border-left: 4px solid {{ value | handle }};"
+                    {% endif %}
                     data-option-value="{{ value | escape }}"
                     data-option-index="{{ option_index }}"
                   >
